@@ -1,3 +1,78 @@
+# import re
+# import pyperclip
+
+# def svg_to_dart(svg_content):
+#     shapes = []
+#     # Expressões regulares para encontrar elementos <path> e <circle>
+#     path_regex = re.compile(r'<path[^>]*d="([^"]+)"[^>]*>')
+#     circle_regex = re.compile(r'<circle[^>]*cx="([^"]+)"[^>]*cy="([^"]+)"[^>]*r="([^"]+)"[^>]*>')
+
+#     # Encontrar todos os elementos <path> e extrair o atributo 'd'
+#     paths = path_regex.findall(svg_content)
+#     for d in paths:
+#         # Remover quebras de linha e espaços extras
+#         d_clean = ' '.join(d.strip().split())
+#         shape = f"""Shape(
+#       path: parseSvgPathData(
+#         '{d_clean}',
+#       ),
+#       color: Colors.white,
+#     ),"""
+#         shapes.append(shape)
+
+#     # Encontrar todos os elementos <circle> e extrair 'cx', 'cy' e 'r'
+#     circles = circle_regex.findall(svg_content)
+#     for cx, cy, r in circles:
+#         cx = float(cx)
+#         cy = float(cy)
+#         r = float(r)
+#         # Converter o círculo em dados de caminho usando comandos de arco
+#         path_data = f'M{cx - r},{cy} A{r},{r} 0 1,0 {cx + r},{cy} A{r},{r} 0 1,0 {cx - r},{cy}'
+#         shape = f"""Shape(
+#       path: parseSvgPathData(
+#         '{path_data}',
+#       ),
+#       color: Colors.white,
+#     ),"""
+#         shapes.append(shape)
+
+#     return '\n\n'.join(shapes)
+
+# # Exemplo de uso:
+# if __name__ == "__main__":
+#     svg_content = '''
+#     <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg">
+#   <g transform="translate(250,500)">
+#     <path d="M 0 0 L 0 -100" stroke="green" stroke-width="2"/>
+#     <g transform="translate(0,-100)">
+#       <path d="M 0 0 L 0 -80" stroke="green" stroke-width="2"/>
+#       <g transform="translate(0,-80) rotate(-30)">
+#         <path d="M 0 0 L 0 -60" stroke="green" stroke-width="2"/>
+#         <g transform="translate(0,-60) rotate(-30)">
+#           <path d="M 0 0 L 0 -40" stroke="green" stroke-width="2"/>
+#         </g>
+#         <g transform="translate(0,-60) rotate(30)">
+#           <path d="M 0 0 L 0 -40" stroke="green" stroke-width="2"/>
+#         </g>
+#       </g>
+#       <g transform="translate(0,-80) rotate(30)">
+#         <path d="M 0 0 L 0 -60" stroke="green" stroke-width="2"/>
+#         <g transform="translate(0,-60) rotate(-30)">
+#           <path d="M 0 0 L 0 -40" stroke="green" stroke-width="2"/>
+#         </g>
+#         <g transform="translate(0,-60) rotate(30)">
+#           <path d="M 0 0 L 0 -40" stroke="green" stroke-width="2"/>
+#         </g>
+#       </g>
+#     </g>
+#   </g>
+# </svg>
+#     '''
+
+#     dart_code = svg_to_dart(svg_content)
+#     pyperclip.copy(dart_code)
+#     print("O código Dart foi copiado para a área de transferência.")
+
 import re
 import pyperclip
 
@@ -13,11 +88,11 @@ def svg_to_dart(svg_content):
         # Remover quebras de linha e espaços extras
         d_clean = ' '.join(d.strip().split())
         shape = f"""Shape(
-      path: parseSvgPathData(
-        '{d_clean}',
-      ),
-      color: Colors.white,
-    ),"""
+          path: parseSvgPathData(
+            '{d_clean}',
+          ),
+          color: Colors.white,
+        ),"""
         shapes.append(shape)
 
     # Encontrar todos os elementos <circle> e extrair 'cx', 'cy' e 'r'
@@ -26,14 +101,54 @@ def svg_to_dart(svg_content):
         cx = float(cx)
         cy = float(cy)
         r = float(r)
-        # Converter o círculo em dados de caminho usando comandos de arco
-        path_data = f'M{cx - r},{cy} A{r},{r} 0 1,0 {cx + r},{cy} A{r},{r} 0 1,0 {cx - r},{cy}'
+
+        # Converter o círculo em dados de caminho usando curvas de Bézier cúbicas
+        # Fórmula para aproximar um círculo com 4 curvas de Bézier
+        # Constante para calcular os pontos de controle
+        c = r * 0.552284749831
+
+        # Coordenadas dos pontos
+        x0 = cx - r
+        y0 = cy
+        x1 = cx - r
+        y1 = cy - c
+        x2 = cx - c
+        y2 = cy - r
+        x3 = cx
+        y3 = cy - r
+        x4 = cx + c
+        y4 = cy - r
+        x5 = cx + r
+        y5 = cy - c
+        x6 = cx + r
+        y6 = cy
+        x7 = cx + r
+        y7 = cy + c
+        x8 = cx + c
+        y8 = cy + r
+        x9 = cx
+        y9 = cy + r
+        x10 = cx - c
+        y10 = cy + r
+        x11 = cx - r
+        y11 = cy + c
+
+        # Criar o path data usando curvas de Bézier cúbicas (comandos 'C')
+        path_data = (
+            f'M{x0},{y0} '
+            f'C{x1},{y1} {x2},{y2} {x3},{y3} '
+            f'C{x4},{y4} {x5},{y5} {x6},{y6} '
+            f'C{x7},{y7} {x8},{y8} {x9},{y9} '
+            f'C{x10},{y10} {x11},{y11} {x0},{y0} Z'
+        )
+
+        # Adicionar o shape à lista
         shape = f"""Shape(
-      path: parseSvgPathData(
-        '{path_data}',
-      ),
-      color: Colors.white,
-    ),"""
+          path: parseSvgPathData(
+            '{path_data}',
+          ),
+          color: Colors.white,
+        ),"""
         shapes.append(shape)
 
     return '\n\n'.join(shapes)
@@ -41,7 +156,24 @@ def svg_to_dart(svg_content):
 # Exemplo de uso:
 if __name__ == "__main__":
     svg_content = '''
-    <g>
+    <?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.5.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve">
+<g id="BACKGROUND">
+	<rect style="fill:#FFFFFF;" width="500" height="500"/>
+</g>
+<g id="OBJECTS">
+	<g>
+		<g>
+			<defs>
+				<rect id="SVGID_1_" width="500" height="500"/>
+			</defs>
+			<clipPath id="SVGID_00000128465937127874439250000009739053961940322469_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<g style="clip-path:url(#SVGID_00000128465937127874439250000009739053961940322469_);">
+				<g>
 					
 						<path id="1" style="fill:#FFFFFF;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="
 						M-15.01,294.65c4.41-25.52,16.06-50.82,37.14-67.32s52.59-22.35,76.62-9.96c15.71,8.1,26.45,22.51,36.62,36.43
@@ -512,6 +644,9 @@ if __name__ == "__main__":
 				M211.65,253.43c-41.38,7.36-16.15-50.85,3.35-11.82C259.86,223.65,246.33,290.06,211.65,253.43z"/>
 		</g>
 	</g>
+</g>
+</svg>
+
     '''
 
     dart_code = svg_to_dart(svg_content)

@@ -13,7 +13,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Color selectedColor = Colors.red;
 
   // Definimos três diferentes Paths para formas que se sobrepõem
-  final List<Shape> shapes = library['sereia']!;
+  final List<Shape> shapes = library['marmeid2']!;
 
   _ColorableShapesPageState();
    

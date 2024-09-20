@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 class Shape {
   Path path;
   Color color;
-
-  Shape({required this.path, required this.color});
+ String? id;
+  Shape({required this.path, required this.color,  this.id});
 }
 
 // Painter para desenhar múltiplas formas
