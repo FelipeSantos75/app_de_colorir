@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'canvas.dart';
 import 'shape_grid.dart';
-import 'shapes_library.dart';
-
 void main() {
   runApp(ColorableShapesApp());
 }
