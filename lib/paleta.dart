@@ -70,13 +70,17 @@ class ColorPalette extends StatelessWidget {
 
   // Função para gerar tons mais claros e escuros da cor
   List<Color> getShades(Color color) {
-    return [
+    return color != Colors.black ? [
+      lighten(color, 0.4),
+      lighten(color, 0.35),
       lighten(color, 0.3),
       lighten(color, 0.15),
       color,
       darken(color, 0.15),
       darken(color, 0.3),
-    ];
+      darken(color, 0.45),
+      
+    ] : [color];
   }
 
   // Função para clarear a cor
@@ -101,7 +105,7 @@ class ColorPalette extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 70,
-      color: Colors.grey[200],
+      color: Colors.grey,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: colors.map((Color color) {

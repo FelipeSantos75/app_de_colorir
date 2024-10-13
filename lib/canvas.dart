@@ -5,6 +5,9 @@ import 'shape.dart';
 import 'shapes_library.dart';
 
 class ColorableShapesPage extends StatefulWidget {
+  final List<Shape> shapes;
+
+  const ColorableShapesPage({super.key, required this.shapes}); //= library['dino']!;
   @override
   _ColorableShapesPageState createState() => _ColorableShapesPageState();
 }
@@ -13,39 +16,42 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Color selectedColor = Colors.red;
 
   // Definimos três diferentes Paths para formas que se sobrepõem
-  final List<Shape> shapes = library['marmeid2']!;
-
+  
   _ColorableShapesPageState();
    
 
   @override
   Widget build(BuildContext context) {
     // Definimos um tamanho fixo para a área de desenho
-    final double canvasWidth = 400;
-    final double canvasHeight = 400;
+    const double canvasWidth = double.infinity;
+    const double canvasHeight = 800;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Aplicativo de Colorir Formas'),
+        title:const  Text('Aplicativo de Colorir Formas'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            width: double.infinity,
+            width: canvasWidth,
             height: canvasHeight- (canvasHeight*0.2),
             child: GestureDetector(
               onTapDown: (TapDownDetails details) {
-                RenderBox box = context.findRenderObject() as RenderBox;
           
                 // Posição local relativa ao GestureDetector/CustomPaint
                 Offset localPosition = details.localPosition;
-          
+                
                 // Verifica as formas na ordem inversa, da última para a primeira
-                for (var shape in shapes.reversed) {
+                for (var shape in widget.shapes.reversed) {
                   if (shape.path.contains(localPosition)) {
                     setState(() {
                       shape.color = selectedColor;
+                      debugPrint(localPosition.toString());
+                      // Exibimos o ID da forma que foi clicada
+                      if(shape.id != null) {
+                        debugPrint(shape.id);
+                      }
                     });
                     break;
                   }
@@ -53,7 +59,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
               },
               child: CustomPaint(
                 size: Size(canvasWidth, canvasHeight),
-                painter: MultiShapePainter(shapes),
+                painter: MultiShapePainter(widget.shapes),
               ),
             ),
           ),
