@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'canvas.dart';
-import 'shape.dart';
-import 'shapes_library.dart';
+import '../control/canvas.dart';
+import '../models/shape.dart';
+import '../control/shapes_library.dart';
 import 'dart:math';
 
 class ShapesPageGrid extends StatefulWidget {

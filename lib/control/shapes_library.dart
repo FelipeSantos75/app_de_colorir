@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:path_drawing/path_drawing.dart';
 
-import 'shape.dart';
+import '../models/shape.dart';
 
 
 

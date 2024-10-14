@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 
-import 'paleta.dart';
-import 'shape.dart';
+import '../models/paleta.dart';
+import '../models/shape.dart';
 
 
 class ColorableShapesPage extends StatefulWidget {
@@ -16,7 +16,7 @@ class ColorableShapesPage extends StatefulWidget {
 
 class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Color selectedColor = Colors.red;
-  String selectedTexture = ""; 
+  dynamic selectedTexture; 
   bool istexture = false;
 
   // Definimos três diferentes Paths para formas que se sobrepõem
@@ -60,7 +60,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Widget build(BuildContext context) {
     // Definimos um tamanho fixo para a área de desenho
     const double canvasWidth = double.infinity;
-    const double canvasHeight = 600;
+    const double canvasHeight = 500;
 
     return Scaffold(
       appBar: AppBar(
@@ -89,6 +89,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                         debugPrint(localPosition.toString());
                          shape.textureAsset = selectedTexture;
                          _loadTextures();
+                         
                         // Exibimos o ID da forma que foi clicada
                         if(shape.id != null) {
                           debugPrint(shape.id);
@@ -105,19 +106,24 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
               ),
             ),
             const Spacer(),
-            Row(
-              children: [
-                
-                TexturePalette(
-                  selectedItem: selectedTexture,
-                  onStringSelected: (String path) {
-                    setState(() {
-                      selectedTexture = path;
-                    });
-                  },
-                ),
-              ],
+            TexturePalette(
+              selectedItem: selectedTexture,
+              onStringSelected: (String path) {
+                setState(() {
+                  selectedTexture = path;
+                });
+              },
             ),
+            ColorPalette(
+            selectedColor: selectedColor,
+            onColorSelected: (Color color) {
+              setState(() {
+                selectedColor = color;
+                selectedTexture = null;
+                
+              });
+            },
+          ),
           ],
         ),
       ),
