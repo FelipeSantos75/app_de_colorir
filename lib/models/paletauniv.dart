@@ -84,6 +84,91 @@ class ColorPalette extends StatelessWidget {
   }  
 }
 
+class TexturePalette extends StatelessWidget {
+  
+  late final Function(String) onStringSelected;
+  late final dynamic selectedItem;
+  final List<String> textures = [
+  'assets/textures/basic/borracha.png',
+  'assets/textures/basic/blue.png',
+  'assets/textures/basic/green.png',
+  'assets/textures/basic/orange.png',
+  'assets/textures/basic/indigo.png',
+  'assets/textures/basic/violet.png',
+  'assets/textures/giz/indigogiz.png',
+  'assets/textures/giz/violetgiz.png',
+  // 'assets/textures/giz/yellowgiz.png',
+  // 'assets/textures/giz/pinkgiz.png',
+  // 'assets/textures/giz/redgiz.png',
+  // 'assets/textures/giz/bluegiz.png',
+  'assets/textures/pencil/bluepencil.png',
+'assets/textures/pencil/borrachapencil.png',
+'assets/textures/pencil/greenpencil.png',
+'assets/textures/pencil/indigopencil.png',
+'assets/textures/pencil/orangepencil.png',
+'assets/textures/pencil/redpencil.png',
+'assets/textures/pencil/violetpencil.png',
+];
+  TexturePalette({ required this.onStringSelected, required this.selectedItem});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 70,
+      color: Colors.grey,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: 
+        textureList.map((String texture) {
+  return TextureTile(
+    texture: texture,
+    isSelected: selectedItem == texture,
+    selectedItem: selectedItem,
+    onStringSelected: onStringSelected,
+  );
+}).toList(),
+        
+      ),
+    );
+  }
+
+  List<String> get textureList => textures;
+}
+
+
+class TextureTile extends StatelessWidget {
+  final String texture;
+  final bool isSelected;
+  final dynamic selectedItem;
+  final Function(String)? onStringSelected;
+
+  TextureTile({
+    required this.texture,
+    required this.isSelected,
+    required this.selectedItem,
+    this.onStringSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onStringSelected!(texture),
+      child: Container(
+        width: 50,
+        margin: EdgeInsets.all(1),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(texture),
+            fit: BoxFit.cover,
+          ),
+          border: isSelected ? Border.all(width: 3, color: Colors.white) : null,
+        ),
+      ),
+    );
+  }
+}
+
+
 class ColorTile extends StatelessWidget {
   final Color color;
   final bool isSelected;
@@ -159,71 +244,3 @@ class ColorTile extends StatelessWidget {
     );
   }
 }
-
-
-class TexturePalette extends StatelessWidget {
-  
-  late final Function(String) onStringSelected;
-  late final dynamic selectedItem;
-  final List<String> textures = [
-  'assets/textures/gizverde.png',
-  'assets/textures/gizazul.png',
-];
-  TexturePalette({ required this.onStringSelected, required this.selectedItem});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 70,
-      color: Colors.grey,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: 
-        textureList.map((String texture) {
-  return TextureTile(
-    texture: texture,
-    isSelected: selectedItem == texture,
-    selectedItem: selectedItem,
-    onStringSelected: onStringSelected,
-  );
-}).toList(),
-        
-      ),
-    );
-  }
-
-  List<String> get textureList => textures;
-}
-
-class TextureTile extends StatelessWidget {
-  final String texture;
-  final bool isSelected;
-  final dynamic selectedItem;
-  final Function(String)? onStringSelected;
-
-  TextureTile({
-    required this.texture,
-    required this.isSelected,
-    required this.selectedItem,
-    this.onStringSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onStringSelected!(texture),
-      child: Container(
-        width: 50,
-        margin: EdgeInsets.all(1),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(texture),
-            fit: BoxFit.cover,
-          ),
-          border: isSelected ? Border.all(width: 3, color: Colors.white) : null,
-        ),
-      ),
-    );
-  }
-}
-

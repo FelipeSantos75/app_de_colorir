@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 
-import '../models/paleta.dart';
+import '../models/paletauniv.dart';
 import '../models/shape.dart';
 
 
@@ -114,16 +114,16 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                 });
               },
             ),
-            ColorPalette(
-            selectedColor: selectedColor,
-            onColorSelected: (Color color) {
-              setState(() {
-                selectedColor = color;
-                selectedTexture = null;
+          //   ColorPalette(
+          //   selectedColor: selectedColor,
+          //   onColorSelected: (Color color) {
+          //     setState(() {
+          //       selectedColor = color;
+          //       selectedTexture = null;
                 
-              });
-            },
-          ),
+          //     });
+          //   },
+          // ),
           ],
         ),
       ),

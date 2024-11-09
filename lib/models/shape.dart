@@ -75,6 +75,7 @@ class MultiShapePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    double scale = 0.5;
     for (var shape in shapes) {
       if (shape.texture != null) {
         // Use the preloaded texture
@@ -83,7 +84,7 @@ class MultiShapePainter extends CustomPainter {
             shape.texture!,
             TileMode.repeated,
             TileMode.repeated,
-            Matrix4.identity().storage,
+            (Matrix4.identity()..scale(scale, scale)).storage,
           )
           ..style = PaintingStyle.fill;
 
