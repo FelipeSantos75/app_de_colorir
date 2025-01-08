@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'views/shape_grid.dart';
+import 'views/splash.dart';
 void main() {
   runApp(const ColorableShapesApp());
 }
@@ -10,8 +10,9 @@ class ColorableShapesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Vamos Colorir',
-      home: ShapesPageGrid(),
+      home: SplashScreen(),
     );
   }
 }

@@ -2,130 +2,127 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 
-import '../models/paletauniv.dart';
+import '../models/brush_selector.dart';
+import '../models/brush_type.dart';
+ // Nova importação
+import '../models/paleta.dart';
 import '../models/shape.dart';
-
 
 class ColorableShapesPage extends StatefulWidget {
   final List<Shape> shapes;
 
-  const ColorableShapesPage({super.key, required this.shapes}); //= library['dino']!;
+  const ColorableShapesPage({super.key, required this.shapes});
   @override
   _ColorableShapesPageState createState() => _ColorableShapesPageState();
 }
 
 class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Color selectedColor = Colors.red;
-  dynamic selectedTexture; 
-  bool istexture = false;
+  String? selectedTexture;
+  BrushType selectedBrush = BrushType.basic;  // Adicionado estado para o pincel selecionado
 
-  // Definimos três diferentes Paths para formas que se sobrepõem
-  
-  _ColorableShapesPageState();
-   @override
+  @override
   void initState() {
     super.initState();
     _loadTextures();
   }
 
   Future<void> _loadTextures() async {
-  for (var shape in widget.shapes) {
-    if (shape.textureAsset != null) {
-      try {
-        // Load image data from assets
-        final ByteData data = await rootBundle.load(shape.textureAsset!);
-        // Decode image data to get a ui.Image
-        final ui.Codec codec = await ui.instantiateImageCodec(data. buffer.asUint8List());
-        final ui.FrameInfo frameInfo = await codec.getNextFrame();
-        shape.texture = frameInfo.image;
-      } catch (e) {
-        print('Error loading texture for ${shape.textureAsset}: $e');
+    for (var shape in widget.shapes) {
+      if (shape.textureAsset != null) {
+        try {
+          final ByteData data = await rootBundle.load(shape.textureAsset!);
+          final ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+          final ui.FrameInfo frameInfo = await codec.getNextFrame();
+          shape.texture = frameInfo.image;
+        } catch (e) {
+          print('Error loading texture for ${shape.textureAsset}: $e');
+        }
       }
     }
+    setState(() {});
   }
-  // After loading all textures, trigger a repaint
-  setState(() {});
-}
 
   @override
   void dispose() {
-    // Dispose of images when done
     for (var shape in widget.shapes) {
       shape.texture?.dispose();
     }
     super.dispose();
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Definimos um tamanho fixo para a área de desenho
     const double canvasWidth = double.infinity;
     const double canvasHeight = 500;
 
     return Scaffold(
       appBar: AppBar(
-        title:const  Text('Aplicativo de Colorir Formas'),
+        title: const Text('Aplicativo de Colorir Formas'),
       ),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: canvasWidth,
-              height: canvasHeight,
-              child: GestureDetector(
-                onTapDown: (TapDownDetails details) {
-            
-                  // Posição local relativa ao GestureDetector/CustomPaint
-                  Offset localPosition = details.localPosition;
-                  
-                  // Verifica as formas na ordem inversa, da última para a primeira
-                  for (var shape in widget.shapes.reversed) {
-                    if (shape.path.contains(localPosition)) {
-                      setState(() {
-                        shape.color = selectedColor;
-                        debugPrint(localPosition.toString());
-                         shape.textureAsset = selectedTexture;
-                         _loadTextures();
-                         
-                        // Exibimos o ID da forma que foi clicada
-                        if(shape.id != null) {
-                          debugPrint(shape.id);
-                        }
-                      });
-                      break;
-                    }
+      body: Column(
+        children: [
+          // Área de desenho
+          Container(
+            width: canvasWidth,
+            height: canvasHeight,
+            child: GestureDetector(
+              onTapDown: (TapDownDetails details) {
+                Offset localPosition = details.localPosition;
+                for (var shape in widget.shapes.reversed) {
+                  if (shape.path.contains(localPosition)) {
+                    setState(() {
+                      shape.color = selectedColor;
+                      shape.textureAsset = selectedTexture;
+                      _loadTextures();
+                      if(shape.id != null) {
+                        debugPrint(shape.id);
+                      }
+                    });
+                    break;
                   }
-                },
-                child: CustomPaint(
-                  size: Size(canvasWidth, canvasHeight),
-                  painter: MultiShapePainter(widget.shapes),
-                ),
+                }
+              },
+              child: CustomPaint(
+                size: Size(canvasWidth, canvasHeight),
+                painter: MultiShapePainter(widget.shapes),
               ),
             ),
-            const Spacer(),
-            TexturePalette(
-              selectedItem: selectedTexture,
-              onStringSelected: (String path) {
-                setState(() {
-                  selectedTexture = path;
-                });
-              },
-            ),
-          //   ColorPalette(
-          //   selectedColor: selectedColor,
-          //   onColorSelected: (Color color) {
-          //     setState(() {
-          //       selectedColor = color;
-          //       selectedTexture = null;
-                
-          //     });
-          //   },
-          // ),
-          ],
-        ),
+          ),
+          
+          const Spacer(),
+          
+          // Seletor de Pincéis
+          BrushSelector(
+            selectedBrush: selectedBrush,
+            onBrushSelected: (brush) {
+              setState(() {
+                selectedBrush = brush;
+                // Reset texture when changing brush
+                selectedTexture = null;
+              });
+            },
+            isPremiumUser: true,
+          ),
+          
+          // Paleta de cores e texturas específica do pincel
+          BrushPalette(
+            selectedBrush: selectedBrush,
+            selectedTexture: selectedTexture,
+            // selectedColor: selectedColor,
+            // onColorSelected: (color) {
+            //   setState(() {
+            //     selectedColor = color;
+            //   });
+            // },
+            onTextureSelected: (texture) {
+              setState(() {
+                selectedTexture = texture;
+                _loadTextures();
+              });
+            },
+          ),
+        ],
       ),
     );
   }

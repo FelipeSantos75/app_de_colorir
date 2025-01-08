@@ -1,229 +1,131 @@
-
 import 'package:flutter/material.dart';
+import 'brush_type.dart';
 
+class BrushPalette extends StatelessWidget {
+  final BrushType selectedBrush;
+  final String? selectedTexture;
+  final Function(String) onTextureSelected;
 
-// Paleta de Cores
-class ColorPalette extends StatelessWidget {
-  final Function(Color) onColorSelected;
-  final Color selectedColor;
-  final Function(dynamic)? onItemSelected;
-  final dynamic selectedItem;
+  const BrushPalette({
+    Key? key,
+    required this.selectedBrush,
+    this.selectedTexture,
+    required this.onTextureSelected,
+  }) : super(key: key);
 
-  ColorPalette({required this.onColorSelected, required this.selectedColor,  this.onItemSelected,  this.selectedItem});
+  // Get textures based on brush type
+  List<String> _getTexturesForBrush(BrushType brush) {
+    switch (brush) {
+      case BrushType.basic:
+        return [
+          'assets/textures/basic/red.png',
+          'assets/textures/basic/blue.png',
+          'assets/textures/basic/green.png',
+          'assets/textures/basic/yellow.png',
+          'assets/textures/basic/purple.png',
+          'assets/textures/basic/orange.png',
+          'assets/textures/basic/brown.png',
+          'assets/textures/basic/black.png',
+          'assets/textures/basic/white.png',
+        ];
+      case BrushType.pencil:
+        return [
+          'assets/textures/pencil/redpencil.png',
+          'assets/textures/pencil/bluepencil.png',
+          'assets/textures/pencil/greenpencil.png',
+          'assets/textures/pencil/yellowpencil.png',
+          'assets/textures/pencil/purplepencil.png',
+          'assets/textures/pencil/orangepencil.png',
+        ];
+      case BrushType.chalk:
+        return [
+          'assets/textures/giz/indigogiz.png',
+          'assets/textures/giz/violetgiz.png',
 
-  final List<Color> colors = [
-    Colors.black,
-    Colors.brown,
-    Colors.grey,
-    Colors.red,
-    Colors.blue,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
-    Colors.purple,
-    Colors.pink,
-  ];
-
-  
-
-  // Função para gerar tons mais claros e escuros da cor
-  List<Color> getShades(Color color) {
-    return color != Colors.black ? [
-      lighten(color, 0.4),
-      lighten(color, 0.35),
-      lighten(color, 0.3),
-      lighten(color, 0.15),
-      color,
-      darken(color, 0.15),
-      darken(color, 0.3),
-      darken(color, 0.45),
-      
-    ] : [color];
-  }
-
-
-
-  // Função para clarear a cor
-  Color lighten(Color color, double amount) {
-    final hsl = HSLColor.fromColor(color);
-    final hslLight = hsl.withLightness(
-      (hsl.lightness + amount).clamp(0.0, 1.0),
-    );
-    return hslLight.toColor();
-  }
-
-  // Função para escurecer a cor
-  Color darken(Color color, double amount) {
-    final hsl = HSLColor.fromColor(color);
-    final hslDark = hsl.withLightness(
-      (hsl.lightness - amount).clamp(0.0, 1.0),
-    );
-    return hslDark.toColor();
+        ];
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final textures = _getTexturesForBrush(selectedBrush);
+
     return Container(
-      height: 70,
-      color: Colors.grey,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children:       
-      colors.map((Color color) {
-          return ColorTile(
-            color: color,
-            isSelected: selectedColor == color,
-            selectedColor: selectedColor,
-            onColorSelected: onColorSelected,
-            getShades: getShades,
-          );
-        }).toList(),
-        
+      height: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
-    );
-  }  
-}
-
-class ColorTile extends StatelessWidget {
-  final Color color;
-  final bool isSelected;
-  final Color selectedColor; // Adicionado
-  final Function(Color) onColorSelected;
-  final List<Color> Function(Color) getShades;
-
-  ColorTile({
-    required this.color,
-    required this.isSelected,
-    required this.selectedColor, // Adicionado
-    required this.onColorSelected,
-    required this.getShades,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onColorSelected(color),
-      child: Container(
-        width: 60,
-        
-        decoration: BoxDecoration(
-          border: isSelected ? Border.all(width: 3, color: Colors.white) : null,
-          color: color,
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: IconButton(
-                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                onPressed: () {
-                  // Mostrar tons
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      final shades = getShades(color);
-                      return Container(
-                        height: 100,
-                        color: Colors.grey[200],
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: shades.map((shade) {
-                            return GestureDetector(
-                              onTap: () {
-                                onColorSelected(shade);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                width: 60,
-                                decoration: BoxDecoration(
-                                  border: isSelected ? Border.all(width: 3, color: Colors.white) : null,
-                                  color: shade,
-                                ),
-                                
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${selectedBrush.name} - Texturas',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: textures.length,
+              itemBuilder: (context, index) {
+                final texture = textures[index];
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: _TextureOption(
+                    texture: texture,
+                    isSelected: selectedTexture == texture,
+                    onSelected: onTextureSelected,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-
-class TexturePalette extends StatelessWidget {
-  
-  late final Function(String) onStringSelected;
-  late final dynamic selectedItem;
-  final List<String> textures = [
-  'assets/textures/gizverde.png',
-  'assets/textures/gizazul.png',
-];
-  TexturePalette({ required this.onStringSelected, required this.selectedItem});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 70,
-      color: Colors.grey,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: 
-        textureList.map((String texture) {
-  return TextureTile(
-    texture: texture,
-    isSelected: selectedItem == texture,
-    selectedItem: selectedItem,
-    onStringSelected: onStringSelected,
-  );
-}).toList(),
-        
-      ),
-    );
-  }
-
-  List<String> get textureList => textures;
-}
-
-class TextureTile extends StatelessWidget {
+class _TextureOption extends StatelessWidget {
   final String texture;
   final bool isSelected;
-  final dynamic selectedItem;
-  final Function(String)? onStringSelected;
+  final Function(String) onSelected;
 
-  TextureTile({
+  const _TextureOption({
     required this.texture,
     required this.isSelected,
-    required this.selectedItem,
-    this.onStringSelected,
+    required this.onSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onStringSelected!(texture),
+      onTap: () => onSelected(texture),
       child: Container(
-        width: 50,
-        margin: EdgeInsets.all(1),
+        width: 60,
+        margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
+          border: isSelected 
+            ? Border.all(color: Colors.purple, width: 2)
+            : Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
           image: DecorationImage(
             image: AssetImage(texture),
             fit: BoxFit.cover,
           ),
-          border: isSelected ? Border.all(width: 3, color: Colors.white) : null,
         ),
       ),
     );
   }
 }
-
