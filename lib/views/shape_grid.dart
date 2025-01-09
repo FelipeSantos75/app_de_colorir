@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
-import '../control/canvas.dart';
+import 'canvas.dart';
 import '../control/shapes_library.dart';
+import '../models/desenho.dart';
 import '../models/shape.dart';
 
 
@@ -14,7 +15,7 @@ class ShapesPageGrid extends StatefulWidget {
 
 class _ShapesPageGridState extends State<ShapesPageGrid> {
   // Filtros e categorias
-  final List<String> categories = ['Todos', 'Animais', 'Plantas', 'Mandalas', 'Paisagens'];
+  final List<String> categories = ['Todos', 'Animais', 'Fantasias', 'Mandalas', 'Paisagens'];
   String selectedCategory = 'Todos';
 
   // Controller para busca
@@ -118,114 +119,101 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
             ),
           ),
 
-          // Grid de desenhos
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.0,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: library.length,
-              itemBuilder: (context, index) {
-                final entry = library.entries.elementAt(index);
-                return _buildGridItem(entry.key, entry.value);
-              },
-            ),
-          ),
+  child: GridView.builder(
+    padding: const EdgeInsets.all(16),
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      childAspectRatio: 1.0,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+    ),
+    itemCount: library.length,
+    itemBuilder: (context, index) {
+      final drawing = library[index];
+      return _buildGridItem(drawing);
+    },
+  ),
+),
         ],
       ),
     );
   }
 
-  Widget _buildGridItem(String title, List<Shape> shapes) {
-    // Calcular porcentagem de conclusão (shapes coloridos vs total)
-    int coloredShapes = shapes.where((shape) => shape.color != Colors.white).length;
-    double progress = coloredShapes / shapes.length;
-
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ColorableShapesPage(shapes: shapes),
+  Widget _buildGridItem(Drawing drawing) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ColorableShapesPage(shapes: drawing.shapes),
+        ),
+      );
+    },
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Miniatura do desenho
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
-                ),
-                child: Container(
-                  color: Colors.grey.shade100,
-                  child: CustomPaint(
-                    painter: MultiShapePainter(shapes),
-                  ),
-                ),
-              ),
-            ),
-
-            // Informações do desenho
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(15),
-                  bottomRight: Radius.circular(15),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey.shade200,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      progress == 1.0 ? Colors.green : Colors.purple,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
-    );
-  }
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Miniatura do desenho
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
+              child: Container(
+                color: Colors.grey.shade100,
+                child: CustomPaint(
+                  painter: MultiShapePainter(drawing.shapes),
+                ),
+              ),
+            ),
+          ),
+
+          // Informações do desenho
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  drawing.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // LinearProgressIndicator(
+                //   value: drawing.coloringProgress,
+                //   backgroundColor: Colors.grey.shade200,
+                //   valueColor: AlwaysStoppedAnimation<Color>(
+                //     drawing.isComplete ? Colors.green : Colors.purple,
+                //   ),
+                // ),
+                if (drawing.isPremium)
+                  const Icon(Icons.star, color: Colors.amber, size: 16),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
-
+}
 
 // import 'package:flutter/material.dart';
 // import '../control/canvas.dart';

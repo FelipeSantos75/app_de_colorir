@@ -2,15 +2,59 @@ import 'package:flutter/material.dart';
 
 import 'package:path_drawing/path_drawing.dart';
 
+import '../models/desenho.dart';
 import '../models/shape.dart';
 
 
-
-Map<String,List<Shape>> library = {
-  'marmeid' : marmeid,
-  'dino' : dino,
+final library = [
+  Drawing(
+    id: 'mermaid_001',
+    title: 'Sereia',
+    category: 'Fantasia',
+    tags: ['sereia', 'mar', 'oceano', 'fantasia', 'mitologia', 'criatura marinha'],
+    shapes: marmeid,
+  ),
   
-};
+  Drawing(
+    id: 'dino_001',
+    title: 'Dinossauro',
+    category: 'Animais',
+    tags: ['dinossauro', 'animal', 'pré-histórico', 'réptil'],
+    shapes: dino,
+  ),
+
+  // ... outros desenhos
+];
+
+// Métodos úteis para a biblioteca
+class DrawingLibrary {
+  // Buscar desenhos por tag
+  static List<Drawing> searchByTag(String tag) {
+    return library.where((drawing) => 
+      drawing.tags.any((t) => t.toLowerCase().contains(tag.toLowerCase()))
+    ).toList();
+  }
+
+  // Filtrar por categoria
+  static List<Drawing> filterByCategory(String category) {
+    return library.where((drawing) => drawing.category == category).toList();
+  }
+
+  // Obter desenhos premium
+  static List<Drawing> getPremiumDrawings() {
+    return library.where((drawing) => drawing.isPremium).toList();
+  }
+
+  // Obter desenhos gratuitos
+  static List<Drawing> getFreeDrawings() {
+    return library.where((drawing) => !drawing.isPremium).toList();
+  }
+}
+// Map<String,List<Shape>> library = {
+//   'marmeid' : marmeid,
+//   'dino' : dino,
+  
+// };
 
 var dino = [
 Shape(
