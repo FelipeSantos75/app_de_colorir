@@ -10,7 +10,7 @@ final library = [
   Drawing(
     id: 'mermaid_001',
     title: 'Sereia',
-    category: 'Fantasia',
+    category: 'Fantasias',
     tags: ['sereia', 'mar', 'oceano', 'fantasia', 'mitologia', 'criatura marinha'],
     shapes: marmeid,
   ),

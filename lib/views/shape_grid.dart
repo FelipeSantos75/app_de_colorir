@@ -128,9 +128,9 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
       crossAxisSpacing: 16,
       mainAxisSpacing: 16,
     ),
-    itemCount: library.length,
+    itemCount: _getFilteredDrawings().length,
     itemBuilder: (context, index) {
-      final drawing = library[index];
+      final drawing = _getFilteredDrawings()[index];
       return _buildGridItem(drawing);
     },
   ),
@@ -139,6 +139,22 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
       ),
     );
   }
+
+List<Drawing> _getFilteredDrawings() {
+  return library.where((drawing) {
+    // Primeiro, verifica se o desenho corresponde à categoria selecionada
+    bool matchesCategory = selectedCategory == 'Todos' || 
+                         drawing.category == selectedCategory;
+
+    // Depois, verifica se o desenho corresponde à busca
+    bool matchesSearch = searchQuery.isEmpty ||
+                        drawing.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                        (drawing.tags?.any((tag) => 
+                          tag.toLowerCase().contains(searchQuery.toLowerCase())) ?? false);
+
+    return matchesCategory && matchesSearch;
+  }).toList();
+}
 
   Widget _buildGridItem(Drawing drawing) {
   return GestureDetector(
