@@ -47,7 +47,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 
 // Classe que define cada forma com seu Path, Cor ou Textura

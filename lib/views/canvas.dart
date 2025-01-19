@@ -63,7 +63,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
       body: Column(
         children: [
           // Área de desenho
-          Container(
+          SizedBox(
             width: canvasWidth,
             height: canvasHeight,
             child: GestureDetector(
@@ -84,7 +84,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                 }
               },
               child: CustomPaint(
-                size: Size(canvasWidth, canvasHeight),
+                size: const Size(canvasWidth, canvasHeight),
                 painter: MultiShapePainter(widget.shapes),
               ),
             ),
