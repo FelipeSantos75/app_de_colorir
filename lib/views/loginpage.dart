@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'registerpage.dart';
 import 'shape_grid.dart';
 import 'splash.dart';
 
@@ -30,12 +31,12 @@ class _LoginPageState extends State<LoginPage> {
 
       try {
         final FirebaseAuth _auth = FirebaseAuth.instance;
-        final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        final UserCredential userCredential =
+            await _auth.signInWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
 
-        // Navigate to home page on success
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -44,9 +45,37 @@ class _LoginPageState extends State<LoginPage> {
         }
       } on FirebaseAuthException catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao fazer login: ${e.message}')),
-          );
+          if (e.code == 'user-not-found') {
+            // If user doesn't exist, offer to register
+            if (mounted) {
+              final shouldRegister = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Usuário não encontrado'),
+                  content: const Text('Deseja criar uma nova conta?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Não'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Sim'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (shouldRegister == true) {
+                // Navigate to registration page
+                Navigator.pushNamed(context, '/register');
+              }
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erro ao fazer login: ${e.message}')),
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
@@ -64,11 +93,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
-    
+
     try {
       // TODO: Implement Google Sign-In
-      await Future.delayed(const Duration(seconds: 2)); // Simulate network delay
-      
+      await Future.delayed(
+          const Duration(seconds: 2)); // Simulate network delay
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -78,7 +108,8 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao fazer login com Google: ${e.toString()}')),
+          SnackBar(
+              content: Text('Erro ao fazer login com Google: ${e.toString()}')),
         );
       }
     } finally {
@@ -103,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          
+
           // Main content
           SafeArea(
             child: Center(
@@ -113,11 +144,11 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // App logo
-                    const AppLogo(),                    
-                    const SizedBox(height: 32),                    
+                    const AppLogo(),
+                    const SizedBox(height: 32),
                     // Title
-                    Title(title: 'Bem-vindo ao Vamos Colorir'),                    
-                    const SizedBox(height: 32),                    
+                    Title(title: 'Bem-vindo ao Vamos Colorir'),
+                    const SizedBox(height: 32),
                     // Login form
                     _formSignin(),
                   ],
@@ -132,188 +163,193 @@ class _LoginPageState extends State<LoginPage> {
 
   Form _formSignin() {
     return Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        // Email field
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            prefixIcon: const Icon(Icons.email),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira seu email';
-                            }
-                            if (!value.contains('@')) {
-                              return 'Por favor, insira um email válido';
-                            }
-                            return null;
-                          },
-                        ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Password field
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            hintText: 'Senha',
-                            prefixIcon: const Icon(Icons.lock),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, insira sua senha';
-                            }
-                            if (value.length < 6) {
-                              return 'A senha deve ter pelo menos 6 caracteres';
-                            }
-                            return null;
-                          },
-                        ),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Login button
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _signInWithEmail,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF9C27B0),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: _isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : const Text(
-                                  'Entrar',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Divider
-                        const Row(
-                          children:  [
-                            Expanded(child: Divider()),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: Text('ou'),
-                            ),
-                            Expanded(child: Divider()),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Google sign-in button
-                        _googleLoginWidget(),
-                        
-                        const SizedBox(height: 24),
-                        
-                        // Register link
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('Ainda não tem uma conta?'),
-                            TextButton(
-                              onPressed: () {
-                                // TODO: Navigate to registration page
-                              },
-                              child: const Text(
-                                'Registre-se',
-                                style: TextStyle(
-                                  color: Color(0xFF9C27B0),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+      key: _formKey,
+      child: Column(
+        children: [
+          // Email field
+          TextFormField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              hintText: 'Email',
+              prefixIcon: const Icon(Icons.email),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, insira seu email';
+              }
+              if (!value.contains('@')) {
+                return 'Por favor, insira um email válido';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          // Password field
+          TextFormField(
+            controller: _passwordController,
+            obscureText: _obscurePassword,
+            decoration: InputDecoration(
+              hintText: 'Senha',
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  });
+                },
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, insira sua senha';
+              }
+              if (value.length < 6) {
+                return 'A senha deve ter pelo menos 6 caracteres';
+              }
+              return null;
+            },
+          ),
+
+          const SizedBox(height: 24),
+
+          // Login button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _signInWithEmail,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF9C27B0),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Text(
+                      'Entrar',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Divider
+          const Row(
+            children: [
+              Expanded(child: Divider()),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text('ou'),
+              ),
+              Expanded(child: Divider()),
+            ],
+          ),
+
+          const SizedBox(height: 24),
+
+          // Google sign-in button
+          _googleLoginWidget(),
+
+          const SizedBox(height: 24),
+
+          // Register link
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Ainda não tem uma conta?'),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterPage()),
                   );
+                },
+                child: const Text(
+                  'Registre-se',
+                  style: TextStyle(
+                    color: Color(0xFF9C27B0),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   SizedBox _googleLoginWidget() {
     return SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: _isLoading ? null : _signInWithGoogle,
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              side: const BorderSide(color: Color(0xFF9C27B0)),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            icon: Image.asset(
-                              'assets/icons/google.png',
-                              width: 24,
-                              height: 24,
-                            ),
-                            label: const Text(
-                              'Continuar com Google',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF9C27B0),
-                              ),
-                            ),
-                          ),
-                        );
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _isLoading ? null : _signInWithGoogle,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          side: const BorderSide(color: Color(0xFF9C27B0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        icon: Image.asset(
+          'assets/icons/google.png',
+          width: 24,
+          height: 24,
+        ),
+        label: const Text(
+          'Continuar com Google',
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF9C27B0),
+          ),
+        ),
+      ),
+    );
   }
 }
 
 class Title extends StatelessWidget {
   final String title;
   const Title({
-    super.key, required this.title,
+    super.key,
+    required this.title,
   });
 
   @override
   Widget build(BuildContext context) {
-    return  Text(
+    return Text(
       title,
       style: const TextStyle(
         fontSize: 24,

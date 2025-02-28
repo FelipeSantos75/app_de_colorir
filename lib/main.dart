@@ -3,7 +3,13 @@ import 'package:flutter/material.dart';
 import 'views/splash.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+    print('Firebase inicializado com sucesso');
+  } catch (e) {
+    print('Erro ao inicializar Firebase: $e');
+    // Continue mesmo em caso de erro para permitir o desenvolvimento
+  }
   runApp(const ColorableShapesApp());
 }
 
