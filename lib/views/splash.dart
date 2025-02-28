@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'shape_grid.dart';
+import 'loginpage.dart';
 import 'dart:math' as math;
 
 class SplashScreen extends StatefulWidget {
@@ -163,7 +163,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ShapesPageGrid(),
+                                builder: (context) => const LoginPage(),
                               ),
                             );
                           },

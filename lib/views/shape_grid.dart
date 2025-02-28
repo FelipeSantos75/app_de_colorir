@@ -149,8 +149,8 @@ List<Drawing> _getFilteredDrawings() {
     // Depois, verifica se o desenho corresponde à busca
     bool matchesSearch = searchQuery.isEmpty ||
                         drawing.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                        (drawing.tags?.any((tag) => 
-                          tag.toLowerCase().contains(searchQuery.toLowerCase())) ?? false);
+                        (drawing.tags.any((tag) => 
+                          tag.toLowerCase().contains(searchQuery.toLowerCase())) );
 
     return matchesCategory && matchesSearch;
   }).toList();
