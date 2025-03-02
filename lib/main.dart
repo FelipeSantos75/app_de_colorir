@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'views/splash.dart';
+import 'firebase_options.dart' ;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     print('Firebase inicializado com sucesso');
   } catch (e) {
     print('Erro ao inicializar Firebase: $e');

@@ -11,17 +11,43 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  
+  // Controlador para a animação de fade-in
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _fadeController,
+        curve: Curves.easeIn,
+      ),
+    );
+    
+    // Atrasa o início da animação para permitir que a transição do Hero termine
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _fadeController.forward();
+    });
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -143,14 +169,23 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // App logo
+                    // App logo com tag Hero
                     const AppLogo(),
                     const SizedBox(height: 32),
-                    // Title
-                    Title(title: 'Bem-vindo ao Vamos Colorir'),
+                    
+                    // Title com animação de fade-in
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: const Title(title: 'Bem-vindo ao Vamos Colorir'),
+                    ),
+                    
                     const SizedBox(height: 32),
-                    // Login form
-                    _formSignin(),
+                    
+                    // Login form com animação de fade-in
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: _formSignin(),
+                    ),
                   ],
                 ),
               ),
@@ -367,22 +402,25 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: CustomPaint(
-        painter: PalettePainter(opacity: 1.0),
+    return Hero(
+      tag: 'app_logo',
+      child: Container(
+        width: 120,
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: CustomPaint(
+          painter: PalettePainter(opacity: 1.0),
+        ),
       ),
     );
   }

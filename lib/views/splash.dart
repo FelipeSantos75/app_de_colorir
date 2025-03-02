@@ -14,7 +14,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotateAnimation;
   late Animation<double> _opacityAnimation;
-  bool _showButton = false;
+  
+  // Flag para controlar o início da animação de transição
+  bool _startTransition = false;
 
   @override
   void initState() {
@@ -57,11 +59,29 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Show button after animation completes
+    // Inicia a animação de transição após a animação inicial completar
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
         setState(() {
-          _showButton = true;
+          _startTransition = true;
+        });
+        
+        // Dá tempo para a animação de transição ocorrer antes de navegar
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 500),
+                pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+              ),
+            );
+          }
         });
       }
     });
@@ -75,6 +95,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // Determina a posição vertical final do logo
+    // Na splash screen, está centralizado, mas na tela de login estará mais acima
+    final double startPosition = MediaQuery.of(context).size.height / 2 - 75; // Centralizado
+    final double endPosition = MediaQuery.of(context).size.height * 0.2; // Aproximadamente 20% do topo da tela
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -84,121 +109,91 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             colors: [Color(0xFFF3E5F5), Color(0xFFFCE4EC)],
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Animated Logo
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Transform.rotate(
-                      angle: _rotateAnimation.value,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
+        child: Stack(
+          children: [
+            // Animated Logo with Hero tag for smooth transition
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+              top: _startTransition ? endPosition : startPosition,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Hero(
+                  tag: 'app_logo',
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeInOut,
+                    width: _startTransition ? 120 : 150,
+                    height: _startTransition ? 120 : 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
-                        child: CustomPaint(
-                          painter: PalettePainter(
-                            opacity: _opacityAnimation.value,
-                          ),
-                        ),
-                      ),
+                      ],
                     ),
-                  );
-                },
-              ),
-
-              // Animated Title
-              AnimatedBuilder(
-                animation: _opacityAnimation,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _opacityAnimation.value,
-                    child:  Padding(
-                      padding:const EdgeInsets.only(top: 32.0),
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [Color(0xFF9C27B0), Color(0xFFE91E63)],
-                        ).createShader(bounds),
-                        child: const Text(
-                          'Vamos Colorir',
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: Transform.rotate(
+                            angle: _rotateAnimation.value,
+                            child: CustomPaint(
+                              painter: PalettePainter(
+                                opacity: _opacityAnimation.value,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
+            ),
 
-              // Animated Button
-              if (_showButton)
-                TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 500),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 32.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Navegar para a tela principal
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF9C27B0),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+            // Animated Title with fade out during transition
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+              top: _startTransition ? endPosition + 160 : startPosition + 170, // Abaixo do logo
+              left: 0,
+              right: 0,
+              child: AnimatedOpacity(
+                opacity: _startTransition ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 500),
+                child: AnimatedBuilder(
+                  animation: _opacityAnimation,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Center(
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Color(0xFF9C27B0), Color(0xFFE91E63)],
+                          ).createShader(bounds),
+                          child: const Text(
+                            'Vamos Colorir',
+                            style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Começar',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(Icons.arrow_forward, color: Colors.white,),
-                            ],
                           ),
                         ),
                       ),
                     );
                   },
                 ),
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
