@@ -8,9 +8,9 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    print('Firebase inicializado com sucesso');
+    debugPrint('Firebase inicializado com sucesso');  
   } catch (e) {
-    print('Erro ao inicializar Firebase: $e');
+    debugPrint('Erro ao inicializar Firebase: $e');
     // Continue mesmo em caso de erro para permitir o desenvolvimento
   }
   runApp(const ColorableShapesApp());
