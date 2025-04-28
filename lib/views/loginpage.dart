@@ -11,13 +11,14 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  
+
   // Controlador para a animação de fade-in
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
@@ -29,14 +30,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _fadeController,
         curve: Curves.easeIn,
       ),
     );
-    
+
     // Atrasa o início da animação para permitir que a transição do Hero termine
     Future.delayed(const Duration(milliseconds: 300), () {
       _fadeController.forward();
@@ -171,15 +172,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     // App logo com tag Hero
                     const AppLogo(),
                     const SizedBox(height: 32),
-                    
+
                     // Title com animação de fade-in
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: const Title(title: 'Bem-vindo ao Vamos Colorir'),
                     ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // Login form com animação de fade-in
                     FadeTransition(
                       opacity: _fadeAnimation,
@@ -313,7 +314,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           const SizedBox(height: 24),
 
           // Google sign-in button
-          _googleLoginWidget(),
+          _googleLoginWidget(), // todo
 
           const SizedBox(height: 24),
 
