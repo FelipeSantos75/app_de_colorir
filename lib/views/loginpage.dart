@@ -62,7 +62,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           email: _emailController.text,
           password: _passwordController.text,
         );
-
         if (mounted) {
           Navigator.pushReplacement(
             context,
