@@ -4,14 +4,19 @@ import 'dart:ui' as ui;
 
 import '../models/brush_selector.dart';
 import '../models/brush_type.dart';
- // Nova importação
 import '../models/paleta.dart';
 import '../models/shape.dart';
 
 class ColorableShapesPage extends StatefulWidget {
   final List<Shape> shapes;
+  final bool isPremiumUser; // Premium status parameter
 
-  const ColorableShapesPage({super.key, required this.shapes});
+  const ColorableShapesPage({
+    super.key, 
+    required this.shapes,
+    this.isPremiumUser = false, // Default to false
+  });
+
   @override
   _ColorableShapesPageState createState() => _ColorableShapesPageState();
 }
@@ -19,7 +24,7 @@ class ColorableShapesPage extends StatefulWidget {
 class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Color selectedColor = Colors.red;
   String? selectedTexture;
-  BrushType selectedBrush = BrushType.basic;  // Adicionado estado para o pincel selecionado
+  BrushType selectedBrush = BrushType.basic; // Default to basic brush
 
   @override
   void initState() {
@@ -40,7 +45,9 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
         }
       }
     }
-    setState(() {});
+    if (mounted) {
+       setState(() {});
+    }
   }
 
   @override
@@ -58,7 +65,8 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aplicativo de Colorir Formas'),
+        title: const Text('Colorindo'),
+        backgroundColor: Colors.purple,
       ),
       body: Column(
         children: [
@@ -72,11 +80,12 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                 for (var shape in widget.shapes.reversed) {
                   if (shape.path.contains(localPosition)) {
                     setState(() {
-                      shape.color = selectedColor;
+                      // Removendo a atribuição de cor direta, pois agora usamos apenas texturas
+                      // shape.color = selectedColor;
                       shape.textureAsset = selectedTexture;
                       _loadTextures();
                       if(shape.id != null) {
-                        debugPrint(shape.id);
+                        debugPrint('Tapped shape ID: ${shape.id}');
                       }
                     });
                     break;
@@ -102,25 +111,21 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                 selectedTexture = null;
               });
             },
-            isPremiumUser: true,
+            isPremiumUser: widget.isPremiumUser, // Use the actual premium status
           ),
           
-          // Paleta de cores e texturas específica do pincel
+          // Paleta de texturas específica do pincel
           BrushPalette(
             selectedBrush: selectedBrush,
             selectedTexture: selectedTexture,
-            // selectedColor: selectedColor,
-            // onColorSelected: (color) {
-            //   setState(() {
-            //     selectedColor = color;
-            //   });
-            // },
+            selectedColor: selectedColor, // Mantido para compatibilidade
             onTextureSelected: (texture) {
               setState(() {
                 selectedTexture = texture;
                 _loadTextures();
               });
             },
+            isPremiumUser: widget.isPremiumUser, // Pass premium status to palette
           ),
         ],
       ),

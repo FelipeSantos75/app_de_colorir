@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
+import 'shape_grid.dart'; // Add this
 import 'dart:math' as math;
 
 class SplashScreen extends StatefulWidget {
@@ -14,7 +16,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotateAnimation;
   late Animation<double> _opacityAnimation;
-  bool _showButton = false;
+  
+  // Flag para controlar o início da animação de transição
+  bool _startTransition = false;
 
   @override
   void initState() {
@@ -57,15 +61,52 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Show button after animation completes
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        setState(() {
-          _showButton = true;
-        });
-      }
-    });
+    // Check auth state and navigate after animations
+    _checkAuthStateAndNavigate(); 
   }
+
+  Future<void> _checkAuthStateAndNavigate() async {
+    // Wait for initial animations
+    await Future.delayed(const Duration(milliseconds: 2500));
+
+    if (!mounted) return;
+
+    setState(() {
+      _startTransition = true; // Start logo transition animation
+    });
+
+    // Wait for logo transition
+    await Future.delayed(const Duration(milliseconds: 800)); 
+
+    if (!mounted) return;
+
+    // Check Firebase Auth state
+    User? user = FirebaseAuth.instance.currentUser;
+
+    Widget nextPage;
+    if (user != null) {
+      // User is logged in, go to shapes grid 
+      // Premium status check will be handled within ShapesPageGrid
+      nextPage = const ShapesPageGrid(); // Pass user info if needed later
+    } else {
+      // User is not logged in, go to shapes grid in guest mode
+      nextPage = const ShapesPageGrid(isGuest: true); // Add isGuest flag
+    }
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 500),
+        pageBuilder: (context, animation, secondaryAnimation) => nextPage,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
 
   @override
   void dispose() {
@@ -75,6 +116,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // Determina a posição vertical final do logo
+    // Na splash screen, está centralizado, mas na tela de login/grid estará mais acima
+    final double startPosition = MediaQuery.of(context).size.height / 2 - 75; // Centralizado
+    // Ajuste a posição final se necessário, dependendo de onde o logo será reutilizado (LoginPage ou ShapesPageGrid)
+    final double endPosition = MediaQuery.of(context).size.height * 0.1; // Posição mais alta para a próxima tela
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -84,121 +131,91 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             colors: [Color(0xFFF3E5F5), Color(0xFFFCE4EC)],
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Animated Logo
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Transform.rotate(
-                      angle: _rotateAnimation.value,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
+        child: Stack(
+          children: [
+            // Animated Logo with Hero tag for smooth transition
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+              top: _startTransition ? endPosition : startPosition,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Hero(
+                  tag: 'app_logo', // Tag para a transição Hero
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 800),
+                    curve: Curves.easeInOut,
+                    width: _startTransition ? 100 : 150, // Reduz um pouco na tela seguinte
+                    height: _startTransition ? 100 : 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
-                        child: CustomPaint(
-                          painter: PalettePainter(
-                            opacity: _opacityAnimation.value,
-                          ),
-                        ),
-                      ),
+                      ],
                     ),
-                  );
-                },
-              ),
-
-              // Animated Title
-              AnimatedBuilder(
-                animation: _opacityAnimation,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _opacityAnimation.value,
-                    child:  Padding(
-                      padding:const EdgeInsets.only(top: 32.0),
-                      child: ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [Color(0xFF9C27B0), Color(0xFFE91E63)],
-                        ).createShader(bounds),
-                        child: const Text(
-                          'Vamos Colorir',
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: Transform.rotate(
+                            angle: _rotateAnimation.value,
+                            child: CustomPaint(
+                              painter: PalettePainter(
+                                opacity: _opacityAnimation.value,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
+            ),
 
-              // Animated Button
-              if (_showButton)
-                TweenAnimationBuilder<double>(
-                  duration: const Duration(milliseconds: 500),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: value,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 32.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Navegar para a tela principal
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF9C27B0),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
+            // Animated Title with fade out during transition
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+              top: _startTransition ? endPosition + 130 : startPosition + 170, // Ajusta posição relativa ao logo
+              left: 0,
+              right: 0,
+              child: AnimatedOpacity(
+                opacity: _startTransition ? 0.0 : 1.0, // Desaparece durante a transição
+                duration: const Duration(milliseconds: 500),
+                child: AnimatedBuilder(
+                  animation: _opacityAnimation,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Center(
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Color(0xFF9C27B0), Color(0xFFE91E63)],
+                          ).createShader(bounds),
+                          child: const Text(
+                            'Vamos Colorir',
+                            style: TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white, // Cor base para o ShaderMask
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Começar',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(Icons.arrow_forward, color: Colors.white,),
-                            ],
                           ),
                         ),
                       ),
                     );
                   },
                 ),
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
