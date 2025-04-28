@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
+import 'shape_grid.dart'; // Add this
 import 'dart:math' as math;
 
 class SplashScreen extends StatefulWidget {
@@ -59,33 +61,52 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Inicia a animação de transição após a animação inicial completar
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        setState(() {
-          _startTransition = true;
-        });
-        
-        // Dá tempo para a animação de transição ocorrer antes de navegar
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder(
-                transitionDuration: const Duration(milliseconds: 500),
-                pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-                transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                },
-              ),
-            );
-          }
-        });
-      }
-    });
+    // Check auth state and navigate after animations
+    _checkAuthStateAndNavigate(); 
   }
+
+  Future<void> _checkAuthStateAndNavigate() async {
+    // Wait for initial animations
+    await Future.delayed(const Duration(milliseconds: 2500));
+
+    if (!mounted) return;
+
+    setState(() {
+      _startTransition = true; // Start logo transition animation
+    });
+
+    // Wait for logo transition
+    await Future.delayed(const Duration(milliseconds: 800)); 
+
+    if (!mounted) return;
+
+    // Check Firebase Auth state
+    User? user = FirebaseAuth.instance.currentUser;
+
+    Widget nextPage;
+    if (user != null) {
+      // User is logged in, go to shapes grid 
+      // Premium status check will be handled within ShapesPageGrid
+      nextPage = const ShapesPageGrid(); // Pass user info if needed later
+    } else {
+      // User is not logged in, go to shapes grid in guest mode
+      nextPage = const ShapesPageGrid(isGuest: true); // Add isGuest flag
+    }
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 500),
+        pageBuilder: (context, animation, secondaryAnimation) => nextPage,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
 
   @override
   void dispose() {
@@ -96,9 +117,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     // Determina a posição vertical final do logo
-    // Na splash screen, está centralizado, mas na tela de login estará mais acima
+    // Na splash screen, está centralizado, mas na tela de login/grid estará mais acima
     final double startPosition = MediaQuery.of(context).size.height / 2 - 75; // Centralizado
-    final double endPosition = MediaQuery.of(context).size.height * 0.2; // Aproximadamente 20% do topo da tela
+    // Ajuste a posição final se necessário, dependendo de onde o logo será reutilizado (LoginPage ou ShapesPageGrid)
+    final double endPosition = MediaQuery.of(context).size.height * 0.1; // Posição mais alta para a próxima tela
     
     return Scaffold(
       body: Container(
@@ -120,12 +142,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               right: 0,
               child: Center(
                 child: Hero(
-                  tag: 'app_logo',
+                  tag: 'app_logo', // Tag para a transição Hero
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 800),
                     curve: Curves.easeInOut,
-                    width: _startTransition ? 120 : 150,
-                    height: _startTransition ? 120 : 150,
+                    width: _startTransition ? 100 : 150, // Reduz um pouco na tela seguinte
+                    height: _startTransition ? 100 : 150,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
@@ -162,11 +184,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             AnimatedPositioned(
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeInOut,
-              top: _startTransition ? endPosition + 160 : startPosition + 170, // Abaixo do logo
+              top: _startTransition ? endPosition + 130 : startPosition + 170, // Ajusta posição relativa ao logo
               left: 0,
               right: 0,
               child: AnimatedOpacity(
-                opacity: _startTransition ? 0.0 : 1.0,
+                opacity: _startTransition ? 0.0 : 1.0, // Desaparece durante a transição
                 duration: const Duration(milliseconds: 500),
                 child: AnimatedBuilder(
                   animation: _opacityAnimation,
@@ -183,7 +205,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                             style: TextStyle(
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.white, // Cor base para o ShaderMask
                             ),
                           ),
                         ),
