@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 /// Serviço centralizado para gerenciar autenticação
@@ -95,6 +96,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
+      debugPrint('Erro ao fazer login com Google: $e');
       throw Exception('Erro ao fazer login com Google: $e');
     }
   }
