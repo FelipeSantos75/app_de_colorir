@@ -4,13 +4,20 @@ import 'brush_type.dart';
 class BrushPalette extends StatelessWidget {
   final BrushType selectedBrush;
   final String? selectedTexture;
+  final Color? selectedColor; // Keep selectedColor for applying texture
   final Function(String) onTextureSelected;
+  // Remove onColorSelected as we only have textures now
+  // final Function(Color)? onColorSelected;
+  final bool isPremiumUser;
 
   const BrushPalette({
     super.key,
     required this.selectedBrush,
     this.selectedTexture,
+    this.selectedColor, // Keep for applying texture
     required this.onTextureSelected,
+    // this.onColorSelected,
+    this.isPremiumUser = false, // Default to false
   });
 
   // Get textures based on brush type
@@ -224,6 +231,9 @@ class BrushPalette extends StatelessWidget {
   Widget build(BuildContext context) {
     final textures = _getTexturesForBrush(selectedBrush);
 
+    // Verificar se o pincel é premium e o usuário não tem acesso premium
+    bool isPremiumBrushLocked = selectedBrush.isPremium && !isPremiumUser;
+
     return Container(
       height: 100,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -240,28 +250,58 @@ class BrushPalette extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '${selectedBrush.name} - Texturas',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Text(
+                '${selectedBrush.name} - Texturas',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (selectedBrush.isPremium)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                    size: 16,
+                  ),
+                ),
+              if (isPremiumBrushLocked)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Icon(
+                    Icons.lock,
+                    color: Colors.grey,
+                    size: 16,
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: textures
-                    .map((texture) => Padding(
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Scrollbar(
+                thumbVisibility: true, // Sempre mostrar a barra de rolagem
+                thickness: 8.0,
+                radius: const Radius.circular(4.0),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    // Seção de texturas (apenas)
+                    ...textures.map((texture) => Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: _TextureOption(
                             texture: texture,
                             isSelected: selectedTexture == texture,
                             onSelected: onTextureSelected,
+                            isLocked: isPremiumBrushLocked,
                           ),
-                        ))
-                    .toList(),
+                        )),
+                  ],
+                ),
               ),
             ),
           ),
@@ -271,33 +311,62 @@ class BrushPalette extends StatelessWidget {
   }
 }
 
+// _ColorOption class removed as it's no longer needed
+
 class _TextureOption extends StatelessWidget {
   final String texture;
   final bool isSelected;
   final Function(String) onSelected;
+  final bool isLocked;
 
   const _TextureOption({
     required this.texture,
     required this.isSelected,
     required this.onSelected,
+    this.isLocked = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => onSelected(texture),
-      child: Container(
-        width: 60,
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        decoration: BoxDecoration(
-          border: isSelected
-              ? Border.all(color: Colors.purple, width: 2)
-              : Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-          image: DecorationImage(
-            image: AssetImage(texture),
-            fit: BoxFit.cover,
-          ),
+    return MouseRegion(
+      cursor: isLocked ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: isLocked ? null : () => onSelected(texture),
+        child: Stack(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                border: isSelected
+                    ? Border.all(color: Colors.purple, width: 2)
+                    : Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: AssetImage(texture),
+                  fit: BoxFit.cover,
+                  opacity: isLocked ? 0.5 : 1.0,
+                ),
+              ),
+            ),
+            if (isLocked)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.lock,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

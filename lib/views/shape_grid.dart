@@ -1,13 +1,16 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'canvas.dart';
 import '../control/shapes_library.dart';
 import '../models/desenho.dart';
 import '../models/shape.dart';
-
+import 'loginpage.dart'; // Add for navigation
+import 'registerpage.dart'; // Add for navigation
 
 class ShapesPageGrid extends StatefulWidget {
-  const ShapesPageGrid({super.key});
+  final bool isGuest; // Add isGuest flag
+
+  const ShapesPageGrid({super.key, this.isGuest = false}); // Default to false
 
   @override
   State<ShapesPageGrid> createState() => _ShapesPageGridState();
@@ -15,12 +18,34 @@ class ShapesPageGrid extends StatefulWidget {
 
 class _ShapesPageGridState extends State<ShapesPageGrid> {
   // Filtros e categorias
-  final List<String> categories = ['Todos', 'Animais', 'Fantasias', 'Mandalas', 'Paisagens'];
+  final List<String> categories = [ 'Todos', 'Animais', 'Fantasias', 'Mandalas', 'Paisagens' ];
   String selectedCategory = 'Todos';
 
   // Controller para busca
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
+
+  User? _currentUser; // Store current user state
+  bool _isPremiumUser = false; // Store premium status (needs implementation)
+
+  @override
+  void initState() {
+    super.initState();
+    _checkUserStatus();
+  }
+
+  void _checkUserStatus() {
+    if (!widget.isGuest) {
+      _currentUser = FirebaseAuth.instance.currentUser;
+      // TODO: Implement logic to check if the logged-in user is premium
+      // For now, assume logged-in users are premium by default
+      _isPremiumUser = true; 
+    } else {
+      _currentUser = null;
+      _isPremiumUser = false;
+    }
+    setState(() {}); // Update UI based on user status
+  }
 
   @override
   void dispose() {
@@ -42,12 +67,35 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
         backgroundColor: Colors.purple,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.color_lens, color: Colors.white),
-            onPressed: () {
-              // TODO: Implementar página de temas/configurações
-            },
-          ),
+          if (widget.isGuest)
+            TextButton.icon(
+              icon: const Icon(Icons.login, color: Colors.white),
+              label: const Text('Login', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            )
+          else // Logged-in user actions
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              tooltip: 'Sair',
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            ),
+          // IconButton(
+          //   icon: const Icon(Icons.color_lens, color: Colors.white),
+          //   onPressed: () {
+          //     // TODO: Implementar página de temas/configurações
+          //   },
+          // ),
         ],
       ),
       body: Column(
@@ -120,249 +168,177 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
           ),
 
           Expanded(
-  child: GridView.builder(
-    padding: const EdgeInsets.all(16),
-    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-      childAspectRatio: 1.0,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-    ),
-    itemCount: _getFilteredDrawings().length,
-    itemBuilder: (context, index) {
-      final drawing = _getFilteredDrawings()[index];
-      return _buildGridItem(drawing);
-    },
-  ),
-),
+            child: GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.0, // Adjust aspect ratio if needed
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: _getFilteredDrawings().length,
+              itemBuilder: (context, index) {
+                final drawing = _getFilteredDrawings()[index];
+                return _buildGridItem(drawing);
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-List<Drawing> _getFilteredDrawings() {
-  return library.where((drawing) {
-    // Primeiro, verifica se o desenho corresponde à categoria selecionada
-    bool matchesCategory = selectedCategory == 'Todos' || 
-                         drawing.category == selectedCategory;
+  List<Drawing> _getFilteredDrawings() {
+    return library.where((drawing) {
+      // Filter by premium status if user is guest
+      if (widget.isGuest && drawing.isPremium) {
+        return false;
+      }
 
-    // Depois, verifica se o desenho corresponde à busca
-    bool matchesSearch = searchQuery.isEmpty ||
-                        drawing.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                        (drawing.tags.any((tag) => 
-                          tag.toLowerCase().contains(searchQuery.toLowerCase())) );
+      // Filter by category
+      bool matchesCategory = selectedCategory == 'Todos' || 
+                           drawing.category == selectedCategory;
 
-    return matchesCategory && matchesSearch;
-  }).toList();
-}
+      // Filter by search query
+      bool matchesSearch = searchQuery.isEmpty ||
+                          drawing.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                          (drawing.tags.any((tag) => 
+                            tag.toLowerCase().contains(searchQuery.toLowerCase())) );
+
+      return matchesCategory && matchesSearch;
+    }).toList();
+  }
 
   Widget _buildGridItem(Drawing drawing) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ColorableShapesPage(shapes: drawing.shapes),
-        ),
-      );
-    },
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Miniatura do desenho
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(15),
-                topRight: Radius.circular(15),
-              ),
-              child: Container(
-                color: Colors.grey.shade100,
-                child: CustomPaint(
-                  painter: MultiShapePainter(drawing.shapes),
-                ),
+    bool isLocked = drawing.isPremium && widget.isGuest; // Locked if premium and guest
+
+    return GestureDetector(
+      onTap: () {
+        if (isLocked) {
+          _showLoginPrompt(context);
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ColorableShapesPage(
+                shapes: drawing.shapes,
+                isPremiumUser: _isPremiumUser, // Pass premium status
               ),
             ),
-          ),
-
-          // Informações do desenho
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          );
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack( // Use Stack to overlay lock icon
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  drawing.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                // Miniatura do desenho
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                    child: Container(
+                      color: Colors.grey.shade100,
+                      child: CustomPaint(
+                        painter: MultiShapePainter(drawing.shapes),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                // LinearProgressIndicator(
-                //   value: drawing.coloringProgress,
-                //   backgroundColor: Colors.grey.shade200,
-                //   valueColor: AlwaysStoppedAnimation<Color>(
-                //     drawing.isComplete ? Colors.green : Colors.purple,
-                //   ),
-                // ),
-                if (drawing.isPremium)
-                  const Icon(Icons.star, color: Colors.amber, size: 16),
+
+                // Informações do desenho
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Row( // Use Row to place star icon next to title
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          drawing.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (drawing.isPremium && !isLocked) // Show star only if premium and accessible
+                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                    ],
+                  ),
+                ),
               ],
             ),
+            if (isLocked) // Overlay lock icon if locked
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.lock,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLoginPrompt(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Desenho Premium Bloqueado'),
+        content: const Text('Faça login ou crie uma conta para acessar este e outros desenhos premium!'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
           ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+            child: const Text('Fazer Login'),
+          ),
+          OutlinedButton(
+             onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            },
+            child: const Text('Criar Conta'),
+          )
         ],
       ),
-    ),
-  );
+    );
+  }
 }
 
-}
-
-// import 'package:flutter/material.dart';
-// import '../control/canvas.dart';
-// import '../models/shape.dart';
-// import '../control/shapes_library.dart';
-// import 'dart:math';
-
-// class ShapesPageGrid extends StatefulWidget {
-  
-//   const ShapesPageGrid({super.key});
-  
-//   @override
-//   _ShapesPageGridState createState() => _ShapesPageGridState();
-// }
-
-// class _ShapesPageGridState extends State<ShapesPageGrid> {
-//   late List<MapEntry<String, List<Shape>>> allShapeEntries;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     // Coleta todas as entradas do library (cada uma é um par chave-valor)
-//     allShapeEntries = library.entries.toList();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     const double canvasSize = 300;
-    
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Vamos Colorir"),
-//       ),
-//       body: GridView.builder(
-//         padding: const EdgeInsets.all(8),
-//         itemCount: allShapeEntries.length,
-//         gridDelegate:const  SliverGridDelegateWithFixedCrossAxisCount(
-//           crossAxisCount: 2, // Número de colunas no grid
-//           crossAxisSpacing: 8,
-//           mainAxisSpacing: 8,
-//           childAspectRatio: 1, // Mantém os itens quadrados
-//         ),
-//         itemBuilder: (context, index) {
-//           final entry = allShapeEntries[index];
-//           final objectName = entry.key;
-//           final shapes = entry.value;
-//           return GestureDetector(
-//             onTap: () {
-// // Navega para a ColorableShapesPage passando a lista de shapes correspondente
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (context) => ColorableShapesPage(
-                    
-//                     shapes: shapes,
-//                   ),
-//                 ),
-//               );    
-//         },
-//             child: Column(
-//               children: [
-//                 Expanded(
-//                   child: CustomPaint(
-//                     size: Size(canvasSize, canvasSize),
-//                     painter: MultiShapePainter(shapes),
-//                   ),
-//                 ),
-//                 SizedBox(height: 8),
-//                 Text(
-//                   objectName,
-//                   style: TextStyle(fontSize: 16),
-//                 ),
-//               ],
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-
-// // Atualização do MultiShapePainter para ajustar escala e posição
-// class MultiShapePainter extends CustomPainter {
-//   final List<Shape> shapes;
-
-//   MultiShapePainter(this.shapes);
-
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     // Calcula os limites combinados dos shapes
-//     final Rect bounds = _calculateShapesBounds(shapes);
-
-//     // Calcula a escala para ajustar os shapes ao tamanho do canvas
-//     final double scaleX = size.width / bounds.width;
-//     final double scaleY = size.height / bounds.height;
-//     final double scale = min(scaleX, scaleY);
-
-//     // Centraliza os shapes no canvas
-//     final double dx = (size.width - bounds.width * scale) / 2 - bounds.left * scale;
-//     final double dy = (size.height - bounds.height * scale) / 2 - bounds.top * scale;
-
-//     canvas.translate(dx, dy);
-//     canvas.scale(scale);
-
-//     for (var shape in shapes) {
-//       final fillPaint = Paint()
-//         ..color = shape.color
-//         ..style = PaintingStyle.fill;
-
-//       Paint strokePaint = Paint()
-//         ..color = Colors.black
-//         ..style = PaintingStyle.stroke
-//         ..strokeWidth = 2.0 / scale; // Ajusta a espessura do traço
-
-//       canvas.drawPath(shape.path, fillPaint);
-//       if (shape.hasStroke) {
-//         canvas.drawPath(shape.path, strokePaint);
-//       }
-//     }
-//   }
-
-//   // Método para calcular os limites combinados dos shapes
-//   Rect _calculateShapesBounds(List<Shape> shapes) {
-//     Rect bounds = shapes.first.path.getBounds();
-//     for (var shape in shapes.skip(1)) {
-//       bounds = bounds.expandToInclude(shape.path.getBounds());
-//     }
-//     return bounds;
-//   }
-
-//   @override
-//   bool shouldRepaint(covariant MultiShapePainter oldDelegate) {
-//     return false;
-//   }
-// }
+// Use the original MultiShapePainter from the Shape class
