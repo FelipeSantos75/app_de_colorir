@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'registerpage.dart';
 import 'shape_grid.dart';
 import 'splash.dart';
@@ -11,13 +12,15 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  
+
   // Controlador para a animação de fade-in
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
@@ -29,14 +32,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _fadeController,
         curve: Curves.easeIn,
       ),
     );
-    
+
     // Atrasa o início da animação para permitir que a transição do Hero termine
     Future.delayed(const Duration(milliseconds: 300), () {
       _fadeController.forward();
@@ -120,11 +123,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Implement Google Sign-In
-      await Future.delayed(
-          const Duration(seconds: 2)); // Simulate network delay
+      final userCredential = await _authService.signInWithGoogle();
 
-      if (mounted) {
+      if (mounted && userCredential != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Bem-vindo, ${userCredential.user?.displayName ?? ""}!'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        // AuthWrapper vai redirecionar automaticamente
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const ShapesPageGrid()),
@@ -132,10 +143,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Erro ao fazer login com Google: ${e.toString()}')),
-        );
+        String errorMessage = e.toString();
+
+        // Não mostrar erro se usuário cancelou
+        if (!errorMessage.contains('cancelado')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } finally {
       if (mounted) {
@@ -171,15 +189,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     // App logo com tag Hero
                     const AppLogo(),
                     const SizedBox(height: 32),
-                    
+
                     // Title com animação de fade-in
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: const Title(title: 'Bem-vindo ao Vamos Colorir'),
                     ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // Login form com animação de fade-in
                     FadeTransition(
                       opacity: _fadeAnimation,
