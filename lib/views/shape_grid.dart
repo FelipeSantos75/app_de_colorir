@@ -18,7 +18,13 @@ class ShapesPageGrid extends StatefulWidget {
 
 class _ShapesPageGridState extends State<ShapesPageGrid> {
   // Filtros e categorias
-  final List<String> categories = [ 'Todos', 'Animais', 'Fantasias', 'Mandalas', 'Paisagens' ];
+  final List<String> categories = [
+    'Todos',
+    'Animais',
+    'Fantasias',
+    'Mandalas',
+    'Paisagens'
+  ];
   String selectedCategory = 'Todos';
 
   // Controller para busca
@@ -39,7 +45,7 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
       _currentUser = FirebaseAuth.instance.currentUser;
       // TODO: Implement logic to check if the logged-in user is premium
       // For now, assume logged-in users are premium by default
-      _isPremiumUser = true; 
+      _isPremiumUser = true;
     } else {
       _currentUser = null;
       _isPremiumUser = false;
@@ -141,7 +147,7 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
               itemBuilder: (context, index) {
                 final category = categories[index];
                 final isSelected = category == selectedCategory;
-                
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: FilterChip(
@@ -149,7 +155,8 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
                       category,
                       style: TextStyle(
                         color: isSelected ? Colors.white : Colors.purple,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                     selected: isSelected,
@@ -196,21 +203,22 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
       }
 
       // Filter by category
-      bool matchesCategory = selectedCategory == 'Todos' || 
-                           drawing.category == selectedCategory;
+      bool matchesCategory =
+          selectedCategory == 'Todos' || drawing.category == selectedCategory;
 
       // Filter by search query
       bool matchesSearch = searchQuery.isEmpty ||
-                          drawing.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                          (drawing.tags.any((tag) => 
-                            tag.toLowerCase().contains(searchQuery.toLowerCase())) );
+          drawing.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          (drawing.tags.any(
+              (tag) => tag.toLowerCase().contains(searchQuery.toLowerCase())));
 
       return matchesCategory && matchesSearch;
     }).toList();
   }
 
   Widget _buildGridItem(Drawing drawing) {
-    bool isLocked = drawing.isPremium && widget.isGuest; // Locked if premium and guest
+    bool isLocked =
+        drawing.isPremium && widget.isGuest; // Locked if premium and guest
 
     return GestureDetector(
       onTap: () {
@@ -221,8 +229,9 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
             context,
             MaterialPageRoute(
               builder: (context) => ColorableShapesPage(
-                shapes: drawing.shapes,
-                isPremiumUser: _isPremiumUser, // Pass premium status
+                shapes:
+                    drawing.shapes.map((shape) => shape.copyWith()).toList(),
+                isPremiumUser: _isPremiumUser,
               ),
             ),
           );
@@ -241,7 +250,8 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
             ),
           ],
         ),
-        child: Stack( // Use Stack to overlay lock icon
+        child: Stack(
+          // Use Stack to overlay lock icon
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -249,23 +259,29 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
                 // Miniatura do desenho
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(15),
-                      topRight: Radius.circular(15),
-                    ),
-                    child: Container(
-                      color: Colors.grey.shade100,
-                      child: CustomPaint(
-                        painter: MultiShapePainter(drawing.shapes),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
                       ),
-                    ),
-                  ),
+                      child: Container(
+                        color: Colors.grey.shade100,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return CustomPaint(
+                              size: Size(
+                                  constraints.maxWidth, constraints.maxHeight),
+                              painter: MultiShapePainter(drawing.shapes),
+                            );
+                          },
+                        ),
+                      )),
                 ),
 
                 // Informações do desenho
                 Container(
                   padding: const EdgeInsets.all(8),
-                  child: Row( // Use Row to place star icon next to title
+                  child: Row(
+                    // Use Row to place star icon next to title
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
@@ -277,7 +293,8 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (drawing.isPremium && !isLocked) // Show star only if premium and accessible
+                      if (drawing.isPremium &&
+                          !isLocked) // Show star only if premium and accessible
                         const Icon(Icons.star, color: Colors.amber, size: 16),
                     ],
                   ),
@@ -287,7 +304,8 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
             if (isLocked) // Overlay lock icon if locked
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                  color:
+                      Colors.black.withOpacity(0.5), // Semi-transparent overlay
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: const Center(
@@ -309,7 +327,8 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Desenho Premium Bloqueado'),
-        content: const Text('Faça login ou crie uma conta para acessar este e outros desenhos premium!'),
+        content: const Text(
+            'Faça login ou crie uma conta para acessar este e outros desenhos premium!'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -326,7 +345,7 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
             child: const Text('Fazer Login'),
           ),
           OutlinedButton(
-             onPressed: () {
+            onPressed: () {
               Navigator.pop(context); // Close dialog
               Navigator.push(
                 context,
