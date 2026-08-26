@@ -1,4 +1,3 @@
-
 // import 'package:flutter/material.dart';
 
 // // Classe que define cada forma com seu Path e Cor
@@ -19,23 +18,21 @@
 //   @override
 //   void paint(Canvas canvas, Size size) {
 //     // Se necessário, podemos ajustar o canvas aqui
-    
+
 //     for (var shape in shapes) {
-      
+
 //       final fillPaint = Paint()
 //         ..color = shape.color
 //         ..style = PaintingStyle.fill;
-      
+
 //       Paint strokePaint = Paint()
 //         ..color = Colors.black
 //         ..style = PaintingStyle.stroke
 //         ..strokeWidth = 2.0;
-      
-//       canvas.drawPath(shape.path, fillPaint);      
+
+//       canvas.drawPath(shape.path, fillPaint);
 //       shape.hasStroke ? canvas.drawPath(shape.path, strokePaint): null;
-      
-  
-      
+
 //     }
 //   }
 
@@ -45,17 +42,21 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 // Classe que define cada forma com seu Path, Cor ou Textura
 class Shape {
   Path path;
-  Color color; ui.Image? texture; // Holds the loaded image
-  String? textureAsset; // Path to the texture in assets // Caminho para a textura nos assets
+  Color color;
+  ui.Image? texture; // Holds the loaded image
+  String?
+      textureAsset; // Path to the texture in assets // Caminho para a textura nos assets
   String? id;
   bool hasStroke;
+  // Falso nos tracos pretos dos desenhos de linha: eles sao pintados apenas
+  // como contorno e o toque deve atravessa-los ate a area de baixo.
+  bool colorable;
 
   Shape({
     required this.path,
@@ -63,6 +64,7 @@ class Shape {
     this.texture,
     this.id,
     this.hasStroke = true,
+    this.colorable = true,
   });
 }
 

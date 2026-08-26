@@ -12,7 +12,7 @@ class ColorableShapesPage extends StatefulWidget {
   final bool isPremiumUser; // Premium status parameter
 
   const ColorableShapesPage({
-    super.key, 
+    super.key,
     required this.shapes,
     this.isPremiumUser = false, // Default to false
   });
@@ -37,7 +37,8 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
       if (shape.textureAsset != null) {
         try {
           final ByteData data = await rootBundle.load(shape.textureAsset!);
-          final ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+          final ui.Codec codec =
+              await ui.instantiateImageCodec(data.buffer.asUint8List());
           final ui.FrameInfo frameInfo = await codec.getNextFrame();
           shape.texture = frameInfo.image;
         } catch (e) {
@@ -46,7 +47,7 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
       }
     }
     if (mounted) {
-       setState(() {});
+      setState(() {});
     }
   }
 
@@ -62,6 +63,8 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
   Widget build(BuildContext context) {
     const double canvasWidth = double.infinity;
     const double canvasHeight = 500;
+    // Espaco de coordenadas em que todos os desenhos da biblioteca sao escritos.
+    const double drawingSide = 500;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,33 +77,45 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
           SizedBox(
             width: canvasWidth,
             height: canvasHeight,
-            child: GestureDetector(
-              onTapDown: (TapDownDetails details) {
-                Offset localPosition = details.localPosition;
-                for (var shape in widget.shapes.reversed) {
-                  if (shape.path.contains(localPosition)) {
-                    setState(() {
-                      // Removendo a atribuição de cor direta, pois agora usamos apenas texturas
-                      // shape.color = selectedColor;
-                      shape.textureAsset = selectedTexture;
-                      _loadTextures();
-                      if(shape.id != null) {
-                        debugPrint('Tapped shape ID: ${shape.id}');
+            // Os shapes vivem num espaco de 500x500. O FittedBox encaixa esse
+            // quadrado na area disponivel — e, como o GestureDetector fica
+            // dentro dele, o Flutter ja' devolve o toque nas coordenadas do
+            // desenho, sem conta nenhuma aqui.
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: drawingSide,
+                height: drawingSide,
+                child: GestureDetector(
+                  onTapDown: (TapDownDetails details) {
+                    Offset localPosition = details.localPosition;
+                    for (var shape in widget.shapes.reversed) {
+                      if (!shape.colorable) continue;
+                      if (shape.path.contains(localPosition)) {
+                        setState(() {
+                          // Removendo a atribuição de cor direta, pois agora usamos apenas texturas
+                          // shape.color = selectedColor;
+                          shape.textureAsset = selectedTexture;
+                          _loadTextures();
+                          if (shape.id != null) {
+                            debugPrint('Tapped shape ID: ${shape.id}');
+                          }
+                        });
+                        break;
                       }
-                    });
-                    break;
-                  }
-                }
-              },
-              child: CustomPaint(
-                size: const Size(canvasWidth, canvasHeight),
-                painter: MultiShapePainter(widget.shapes),
+                    }
+                  },
+                  child: CustomPaint(
+                    size: const Size(drawingSide, drawingSide),
+                    painter: MultiShapePainter(widget.shapes),
+                  ),
+                ),
               ),
             ),
           ),
-          
+
           const Spacer(),
-          
+
           // Seletor de Pincéis
           BrushSelector(
             selectedBrush: selectedBrush,
@@ -111,9 +126,10 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                 selectedTexture = null;
               });
             },
-            isPremiumUser: widget.isPremiumUser, // Use the actual premium status
+            isPremiumUser:
+                widget.isPremiumUser, // Use the actual premium status
           ),
-          
+
           // Paleta de texturas específica do pincel
           BrushPalette(
             selectedBrush: selectedBrush,
@@ -125,7 +141,8 @@ class _ColorableShapesPageState extends State<ColorableShapesPage> {
                 _loadTextures();
               });
             },
-            isPremiumUser: widget.isPremiumUser, // Pass premium status to palette
+            isPremiumUser:
+                widget.isPremiumUser, // Pass premium status to palette
           ),
         ],
       ),

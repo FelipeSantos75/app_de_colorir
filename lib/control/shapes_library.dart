@@ -5,6 +5,21 @@ import 'package:path_drawing/path_drawing.dart';
 import '../models/desenho.dart';
 import '../models/shape.dart';
 
+// Desenhos de linha gerados por functions/ferramentas/conversor_linhas.py
+// a partir de output_coloring_pages/.
+import 'desenhos/coelhinho_jardim.dart';
+import 'desenhos/elefantinho_savana.dart';
+import 'desenhos/esquilinho_outono.dart';
+import 'desenhos/gatinho_janela.dart';
+import 'desenhos/passarinho_galho.dart';
+import 'desenhos/peixinho_mar.dart';
+import 'desenhos/pinguim_neve.dart';
+import 'desenhos/raposinha_campo.dart';
+import 'desenhos/sapinho_lagoa.dart';
+import 'desenhos/sereia_illustrious.dart';
+import 'desenhos/sereia_lineart.dart';
+import 'desenhos/ursinho_floresta.dart';
+
 
 final library = [
   Drawing(
@@ -14,6 +29,30 @@ final library = [
     tags: ['sereia', 'mar', 'oceano', 'fantasia', 'mitologia', 'criatura marinha'],
     shapes: marmeid,
   ),
+
+  // Teste da trilha Illustrious + LoRA KidsIllustration (ver CLAUDE.md).
+  // Convivendo com mermaid_001 de proposito: e' a mesma cena pelos dois
+  // geradores, para comparar como cada uma se comporta ao pintar.
+  Drawing(
+    id: 'mermaid_002',
+    title: 'Sereia (Illustrious)',
+    category: 'Fantasias',
+    tags: ['sereia', 'mar', 'oceano', 'fantasia', 'teste'],
+    shapes: sereiaIllustrious,
+  ),
+
+  // Line art pedido ao modelo, nao extraido de imagem colorida. 83 áreas no
+  // diagnóstico e a maior com 16% da página — a única das tentativas com o
+  // Illustrious que passa em tudo. Ver "Illustrious" no CLAUDE.md.
+  Drawing(
+    id: 'mermaid_005',
+    title: 'Sereia (line art)',
+    category: 'Fantasias',
+    tags: ['sereia', 'mar', 'oceano', 'fantasia', 'coral'],
+    shapes: sereiaLineart,
+  ),
+
+
   
   Drawing(
     id: 'dino_001',
@@ -21,6 +60,86 @@ final library = [
     category: 'Animais',
     tags: ['dinossauro', 'animal', 'pré-histórico', 'réptil'],
     shapes: dino,
+  ),
+
+  Drawing(
+    id: 'coelhinho_001',
+    title: 'Coelhinho no Jardim',
+    category: 'Animais',
+    tags: ['coelho', 'coelhinho', 'jardim', 'flores', 'cogumelo', 'borboleta', 'animal'],
+    shapes: coelhinhoJardim,
+  ),
+
+  Drawing(
+    id: 'elefantinho_001',
+    title: 'Elefantinho na Savana',
+    category: 'Animais',
+    tags: ['elefante', 'elefantinho', 'savana', 'bola', 'nuvem', 'animal'],
+    shapes: elefantinhoSavana,
+  ),
+
+  Drawing(
+    id: 'esquilinho_001',
+    title: 'Esquilinho no Outono',
+    category: 'Animais',
+    tags: ['esquilo', 'esquilinho', 'outono', 'folhas', 'galho', 'animal'],
+    shapes: esquilinhoOutono,
+  ),
+
+  Drawing(
+    id: 'gatinho_001',
+    title: 'Gatinho na Janela',
+    category: 'Animais',
+    tags: ['gato', 'gatinho', 'janela', 'cortina', 'vaso', 'flor', 'animal'],
+    shapes: gatinhoJanela,
+  ),
+
+  Drawing(
+    id: 'passarinho_001',
+    title: 'Passarinho no Galho',
+    category: 'Animais',
+    tags: ['passaro', 'pássaro', 'passarinho', 'galho', 'flor', 'folhas', 'animal'],
+    shapes: passarinhoGalho,
+  ),
+
+  Drawing(
+    id: 'peixinho_001',
+    title: 'Peixinho no Mar',
+    category: 'Animais',
+    tags: ['peixe', 'peixinho', 'mar', 'oceano', 'estrela do mar', 'bolhas', 'animal'],
+    shapes: peixinhoMar,
+  ),
+
+  Drawing(
+    id: 'pinguim_001',
+    title: 'Pinguim na Neve',
+    category: 'Animais',
+    tags: ['pinguim', 'neve', 'gelo', 'inverno', 'iglu', 'animal'],
+    shapes: pinguimNeve,
+  ),
+
+  Drawing(
+    id: 'raposinha_001',
+    title: 'Raposinha no Campo',
+    category: 'Animais',
+    tags: ['raposa', 'raposinha', 'campo', 'flores', 'borboleta', 'animal'],
+    shapes: raposinhaCampo,
+  ),
+
+  Drawing(
+    id: 'sapinho_001',
+    title: 'Sapinho na Lagoa',
+    category: 'Animais',
+    tags: ['sapo', 'sapinho', 'lagoa', 'vitoria-regia', 'libelula', 'animal'],
+    shapes: sapinhoLagoa,
+  ),
+
+  Drawing(
+    id: 'ursinho_001',
+    title: 'Ursinho na Floresta',
+    category: 'Animais',
+    tags: ['urso', 'ursinho', 'floresta', 'arvore', 'árvore', 'frutas', 'animal'],
+    shapes: ursinhoFloresta,
   ),
 
   // ... outros desenhos

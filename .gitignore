@@ -43,7 +43,6 @@ app.*.map.json
 /android/app/release
 android
 /lib/archived
-firebase.json
 /lib/firebase_options.dart
 android/app/google-services.json
 /linux
@@ -51,5 +50,27 @@ android/app/google-services.json
 /test
 /web
 /windows
-/ios 
+/ios
 web/index.html
+
+# Backend (Cloud Functions)
+functions/node_modules/
+functions/.env
+functions/.env.*
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+
+# cache do pacote de nos do ComfyUI
+comfyui_colorir/__pycache__/
+
+# Levas de comparacao entre modelos — descartaveis, so a leva aprovada
+# fica versionada na raiz de output_coloring_pages/
+output_coloring_pages/krea2/
+output_coloring_pages/redmond/
+output_coloring_pages/zimgt/
+output_coloring_pages/sem_lora/
+backup_leva1/
+.claude/settings.local.json

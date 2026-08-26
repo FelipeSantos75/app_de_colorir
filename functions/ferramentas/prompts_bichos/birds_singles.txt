@@ -1,0 +1,335 @@
+ostrich
+emu
+common cassowary
+rhea
+kiwi bird
+brown tinamou
+emperor penguin
+little blue penguin
+galapagos penguin
+great crested grebe
+red-throated loon
+little grebe
+wandering albatross
+manx shearwater bird
+black storm-petrel
+white-faced storm-petrel
+subantarctic diving-petrel
+brown booby bird
+northern gannet
+great white pelican
+brown pelican
+anhinga snakebird
+great cormorant
+reed cormorant
+magnificent frigatebird
+american bittern
+black-crowned night heron
+gray heron
+in the grasslands
+black heron
+great egret
+boat-billed heron
+white stork
+flamingo
+glossy ibis
+shoebill bird
+white-faced whistling duck
+tundra swan
+graylag goose
+canadian goose
+shelduck
+male mallard duck
+northern shoveler duck
+common eider
+greater scaup
+mandarin duck
+red-breasted merganser
+muscovy duck
+ruddy duck
+king vulture
+california condor
+turkey vulture
+secretary bird
+osprey
+egyptian vulture
+lammergeier bearded vulture
+honey buzzard
+red kite perched
+brahminy kite
+everglade snail kite
+bald eagle
+crested serpent eagle
+northern harrier marsh hawk
+dark chanting goshawk
+goshawk
+cooper's hawk
+red-tailed hawk
+harpy eagle
+golden eagle
+crested caracara
+kestrel perched
+brown falcon
+white gyrfalcon
+peregrine falcon
+great curassow
+crested guan
+chachalaca
+hoatzin
+european quail
+male chinese painted quail
+himalayan snowcock
+red-legged partridge
+temminck's tragopan
+male red junglefowl
+gray peacock pheasant
+golden pheasant
+ring-necked pheasant standing
+indian peafowl
+male black grouse
+greater prairie chicken
+rock ptarmigan
+wild turkey
+guineafowl
+northern bobwhite
+california quail
+andalusian hemipode
+whooping crane
+crowned crane
+limpkin
+takahe
+common moorhen
+water rail
+american coot
+corncrake
+red-legged seriema
+great bustard
+north american jacana
+lapwing
+american golden plover
+ringed plover
+greater painted-snipe
+european oystercatcher
+whimbrel
+american woodcock
+redshank
+common snipe
+ruddy turnstone
+black-winged stilt
+avocet
+stone curlew
+skua
+ivory gull
+herring gull
+black-legged kittiwake
+common tern
+black skimmer
+common murre
+common puffin
+crested auklet
+razorbill
+palla's sandgrouse
+rock dove pigeon
+band-tailed pigeon
+mourning dove
+collared dove
+nicobar pigeon
+yellow-legged green pigeon
+crested pigeon
+victoria crowned pigeon
+rainbow lorikeet
+cockatiel
+sulphur-crested cockatoo
+eclectus parrot
+gray parrot
+peach-faced lovebird
+kakapo parrot
+rose-ringed parakeet
+crimson rosella
+budgerigar
+scarlet macaw
+sun conure
+yellow-headed parrot
+monk parakeet
+cuckoo
+yellow-billed cuckoo
+roadrunner
+red-crested turaco
+barn owl
+elf owl
+screech owl
+great horned owl
+snowy owl
+morepork owl
+long-eared owl
+eurasian pygmy owl
+little owl
+tawny owl
+burrowing owl
+tawny frogmouth bird
+common potoo
+australian owlet-nightjar
+common poor-will
+white-throated swift
+palm swift
+edible-nest swift
+common swift
+sword-billed hummingbird
+male red ruby throat hummingbird
+quetzal
+coppery-tailed trogon
+narina trogon
+speckled mousebird
+kingfisher
+white-collared mangrove kingfisher
+laughing kookaburra
+african pygmy kingfisher
+belted kingfisher
+blue-crowned motmot
+bee-eater bird
+roller bird
+cuckoo-roller
+common hoopoe
+red-billed hornbill
+southern ground hornbill
+helmeted hornbill
+great indian hornbill
+rufous-tailed jacamar
+white-necked puffbird
+crimson-breasted barbet
+emerald toucanet
+toco toucan
+curl-crested aracari
+wryneck
+great spotted woodpecker
+ivory-billed woodpecker
+white-barred piculet
+yellow-bellied sapsucker
+common flicker
+green woodpecker
+blond-crested woodpecker
+rufous hornero
+chestnut-crowned antpitta
+ivory-billed woodcreeper
+black-striped woodcreeper
+white-striped woodcreeper
+woodcreeper
+andean cock-of-the-rock
+scissor-tailed flycatcher
+white-headed marsh tyrant
+eastern phoebe
+kiskadee flycatcher
+eastern kingbird
+willow flycatcher
+short-tailed pygmy tyrant
+ocher-bellied flycatcher
+vermillon flycatcher
+indian pitta
+singing bushlark
+crested skylark
+barn swallow
+white-eyed river martin
+purple martin
+yellow-throated longclaw
+meadow pipit
+water pipit
+yellow wagtail
+pied wagtail
+yellow-bellied greenbul
+red-whiskered bulbul
+northern shrike
+bohemian waxwing
+winter wren
+house wren
+cactus wren
+long-billed marsh wren
+rock wren
+mockingbird
+gray catbird
+dunnock sparrow
+nightingale
+eurasian robin
+red-flanked bluetail
+black redstart
+eastern bluebird
+magpie robin
+american robin
+blackbird
+rufous-crowned babbler
+bearded tit reedling
+blue-gray gnatcatcher
+long-tailed tailorbird
+striped-backed prinia
+willow warbler
+strong-footed warbler
+little grassbird
+superb blue wren
+spotted flycatcher
+pale flycatcher
+long-tailed tit
+black-capped chickadee
+great tit
+brown creeper
+red-breasted nuthatch
+spotted pardalote
+japanese white-eye bird
+crimson yellow-backed sunbird
+tui bird
+noisy miner bird
+reed bunting
+yellowhammer
+song sparrow
+snow bunting
+dark-eyed junco
+savannah sparrow
+chipping sparrow
+rufous-sided towhee
+grassland yellow-finch
+rose-breasted gosbeak
+cardinal
+buff-throated saltator
+painted bunting
+swallow-tanager
+scarlet tanager
+magpie tanager
+blue-gray tanager
+blue-crowned chlorophonia
+blue dacnis
+white-vented euphonia
+paradise tanager
+purple honeycreeper
+black-and-white warbler
+northern parula
+yellow warbler
+mourning warbler
+northern oriole
+yellow-rumped cacique
+common grackle
+bobolink
+brown-headed cowbird
+eastern meadowlark
+purple finch
+canary
+red common crossbill
+european goldfinch
+pine grosbeak
+common redpoll
+bullfinch
+gouldian finch
+blue-faced parrot-finch
+zebra finch
+house sparrow
+rock sparrow standing
+starling
+metallic shining starling
+fork-tailed drongo
+australian magpie
+magpie lark
+bird-of-paradise male
+emperor bird-of-paradise male
+common crow
+rook
+black-billed magpie
+green jay
+jay bird
+blue jay

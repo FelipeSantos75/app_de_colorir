@@ -1,7 +1,12 @@
+import os
 import re
 import pyperclip
 import math
 import xml.etree.ElementTree as ET
+
+# Raiz do repositório, a partir da localização deste arquivo — os caminhos de
+# assets abaixo não dependem de onde o script é executado.
+RAIZ = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def svg_to_dart(svg_content):
     shapes = []
@@ -169,7 +174,7 @@ def convert_arcs_to_beziers(path_data):
 
 # Example usage:
 if __name__ == "__main__":
-    svg_file_path = 'assets/32042198_7888840.svg'  # Replace with your SVG file path
+    svg_file_path = os.path.join(RAIZ, 'assets', '32042198_7888840.svg')  # Replace with your SVG file path
     try:
         with open(svg_file_path, 'r', encoding='utf-8') as svg_file:
             svg_content = svg_file.read()

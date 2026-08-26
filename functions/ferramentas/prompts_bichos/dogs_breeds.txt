@@ -1,0 +1,167 @@
+dingo
+canaan dog
+basenji dog
+xoloitzcuintli hairless dog
+pharaoh hound
+ibizan hound
+greyhound
+borzoi dog
+afghan hound
+saluki dog
+irish wolfhound
+scottish deerhound
+whippet
+hungarian greyhound
+italian greyhound
+alaskan malamute dog
+siberian husky dog
+pomeranian dog
+papillon dog
+lapinporokoira dog
+finnish lapphund dog
+norwegian elkhound
+keeshond dog
+akita dog
+jindo dog
+samoyed dog
+chow chow dog
+shiba inu dog
+alaskan klee kai dog
+bloodhound
+grand basset griffon vendeen dog
+petit basset griffon vendeen dog
+english foxhound
+basset hound
+beagle dog
+american foxhound
+catahoula leopard dog
+treeing walker coonhound
+black and tan coonhound
+bluetick coonhound
+english coonhound
+redbone coonhound
+doberman pinscher dog
+rhodesian ridgeback dog
+standard poodle dog
+chesapeake bay retriever dog
+curly-coated retriever dog
+vizsla dog
+labrador retriever dog
+black flat-coated retriever dog
+golden retriever dog
+pointer dog
+kooikerhondje dog
+english springer spaniel dog
+welsh springer spaniel dog
+clumber spaniel dog
+american cocker spaniel dog
+english cocker spaniel dog
+brittany spaniel dog
+french spaniel dog
+english spaniel dog
+english setter dog
+gordon setter dog
+irish setter dog
+german shorthaired pointer dog
+german wirehaired pointer dog
+german longhaired pointer dog
+wirehaired pointing griffon dog
+weimaraner dog
+bracco italiano dog
+spinone italiano dog
+french pyrenean pointer dog
+lagotto romagnolo dog
+airedale terrier
+irish terrier
+kerry blue terrier
+border terrier
+lakeland terrier
+smooth fox terrier
+wire fox terrier
+cairn terrier
+norfolk terrier
+west highland white terrier
+scottish terrier
+dandie dinmont terrier
+yorkshire terrier
+silky terrier
+australian terrier
+american staffordshire terrier
+american pit bull terrier
+toy fox terrier
+boston terrier
+miniature pinscher dog
+brussels griffon dog
+miniature schnauzer dog
+soft coated wheaten terrier
+bedlington terrier
+jack russell terrier
+bull terrier
+dachshund dog
+wirehaired dachshund dog
+longhaired dachshund dog
+american hairless terrier
+rat terrier
+german shepherd dog
+belgian sheepdog
+malinois dog
+border collie dog
+rough collie dog
+smooth collie dog
+shetland sheepdog
+bearded collie dog
+pembroke welsh corgie dog
+australian kelpie dog
+australian cattle dog
+australian shepherd dog
+komondor dreadlock dog
+giant schnauzer dog
+standard schnauzer dog
+appenzeller sennenhund dog
+bernese mountain dog
+greater swiss mountain dog
+beauceron dog
+czech wolfdog
+saarloos wolfhound
+istrian shepherd dog
+white dogo argentino dog
+spanish mastiff dog
+neapolitan mastiff dog
+bulldog
+bullmastiff dog
+mastiff dog
+french mastiff dog
+boxer dog
+great dane dog
+rottweiler dog
+shar-pei dog
+tibetan mastiff dog
+leonberger dog
+black and white landseer dog
+st bernard dog
+newfoundland dog
+white great pyrenees dog
+gray and white pyrenean mastiff dog
+anatolian shepherd dog
+black bouvier des flandres dog
+swedish vallhund dog
+cane corso dog
+king shepherd dog
+bichon frise dog
+maltese dog
+havanese dog
+chihuahua dog
+lhasa apso dog
+shih tzu dog
+pekingese dog
+japanese chin dog
+cavalier king charles spaniel dog
+tibetan spaniel dog
+chinese crested dog
+french bulldog
+pug dog
+poodle dog
+dalmation dog
+thai ridgeback dog
+labradoodle dog
+cockerpoo dog

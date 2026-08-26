@@ -1,0 +1,352 @@
+platypus
+short-beaked echidna
+virginia opossum
+tasmanian devil
+brown quoll with white spots
+brown antechinus
+numbat
+koala
+wombat
+bilby
+spotted cuscus
+sugar glider
+brush-tailed possum
+ring-tailed rock wallaby
+quokka
+red kangaroo
+new guinea forest wallaby
+bridled nail-tailed wallaby
+swamp wallaby
+tree kangaroo
+kangaroo
+tamandua
+giant anteater
+three-toed sloth
+aardvark
+nine-banded armadillo
+giant pangolin
+tree pangolin
+greater hedgehog tenrec
+western european hedgehog
+desert hedgehog
+short-tailed shrew
+european mole
+greater fruit bat
+queensland blossom bat
+hog-nosed bat
+vampire bat
+peters' ghost-faced bat
+black mastiff bat
+yellow-shouldered bat
+little brown myotis
+common long-eared bat
+big brown bat
+common tree shrew
+ring tailed lemur
+black-and-white ruffed lemur
+russet mouse-lemur
+verreaux's sifaka
+indri lemur
+red ruffed lemur
+greater bush baby
+slow loris
+tarsier
+slender loris
+potto
+golden lion tamarin
+pygmy marmoset
+white silvery marmoset
+black-bearded saki
+squirrel monkey
+white fronted capuchin
+black spider monkey
+red howler monkey
+black howler monkey
+common woolly monkey
+barbary ape
+japanese macaque
+bonnet macaque
+white cheeked mangabey
+agile mangabey
+olive baboon
+hamadryas baboon
+chacma baboon
+mandrill
+gelada baboon
+vervet monkey
+de brazza's monkey
+angolan black and white colobus monkey
+red colobus monkey
+proboscis monkey
+langur
+black gibbon
+black siamang
+lar gibbon
+orangutan
+chimpanzee
+pygmy chimpanzee
+gorilla
+coyote
+gray wolf
+fennec fox
+red fox
+arctic fox
+dingo
+african wild dog
+maned wolf
+tanuki dog
+dhole
+bat eared fox
+black backed jackal
+ethiopian wolf
+gray fox
+island fox
+kit fox
+black bear
+grizzy bear
+bornean-sun-bear
+sloth-bear
+spectacled-bear
+gobi-bear
+giant panda
+red panda
+raccoon
+kinkajou
+coati
+ringtail
+black-footed ferret
+western polecat
+marten
+least weasel
+american badger
+eurasian badger
+honey badger
+striped skunk
+otter
+giant otter
+sea otter
+small spotted genet
+african civet
+binturong
+meerkat
+banded palm civet
+bushy tailed mongoose
+fossa
+indian mongoose
+marsh mongoose
+banded mongoose
+aardwolf
+spotted hyena
+striped hyena
+caracal
+iberian lynx
+canada lynx
+siberian lynx
+leopard cat
+cougar
+cheetah
+clouded leopard
+ocelot
+pallas cat
+bobcat
+serval
+wild cat
+jaguar panther
+leopard
+lion
+lioness
+snow leopard
+tiger
+black footed cat
+brown jaguarundi
+european wildcat
+margay
+sand cat
+indian rusty-spotted cat
+white bengal tiger
+california sea lion
+northern fur seal
+northern steller sea lion
+walrus
+south american fur seal
+leopard seal
+harbor seal
+harp seal
+gray seal
+dugong
+manatee
+weddell seal
+ganges dolphin
+harbor porpoise
+striped dolphin
+common dolphin
+bottle nosed dolphin
+orca
+long-finned pilot whale
+sperm whale
+pygmy sperm whale
+narwhal
+beluga
+blue whale
+gray whale
+humpback whale
+minke whale
+sei whale
+bowhead whale
+rock hyrax
+tree hyrax
+african elephant
+indian elephant
+common zebra
+grevy's zebra
+camargue horse
+brown brazilian tapir
+malayan tapir
+white rhinoceros
+black rhinoceros
+indian rhinoceros
+sumatran rhinoceros
+male babirusa
+wild boar
+warthog
+giant forest hog
+chaco peccary
+collared peccary
+hippopotamus
+pygmy hippopotamus
+dromedary camel
+bactrian camel
+guanco
+vicuna
+chinese muntjac
+forest musk deer
+tufted deer
+moose
+peary caribou
+male white tailed deer
+female white-tailed
+roe deer
+pronghorn
+okapi
+giraffe
+northern pudu
+pampas deer
+male bongo antelope
+male nyala antelope
+greater kudu
+male eland with twisty horns
+male nilgai
+male gaur
+male banteng
+water buffalo
+yak
+bison
+european bison
+african buffalo
+yellow duiker
+male common duiker
+roan antelope
+lechwe
+male uganda kob
+male common defassa waterbuck
+male reedbuck
+arabian oryx
+wildebeest
+sassaby
+bontebok
+hartebeest
+addax
+klipspringer
+male oribi
+kirk's dik-dik
+blackbuck
+springbok
+thompson's gazelle
+gerenuk
+male impala
+male saiga
+male goral
+serow
+iberian ibex
+chamois
+mountain goat
+muskox
+mouflon
+bighorn sheep
+barbary sheep
+bhutan takin
+japanese serow
+black giant squirrel
+indian striped squirrel
+eurasian red squirrel
+african giant squirrel
+gray squirrel
+woodchuck
+chipmunk
+prairie dog
+african ground squirrel
+hoary marmot
+plains pocket gopher
+silky pocket mouse
+desert kangaroo rat
+mountain beaver
+beaver
+eurasian beaver
+beecroft's flying squirrel
+deermouse
+baja california rice rat
+western harvest mouse
+golden mouse
+south american field mouse
+arizona cotton rat
+fish-eating rat
+common hamster
+golden hamster
+gray russian hamster
+white-tailed rat
+muskrat
+bank vole
+meadow vole
+eruopean water vole
+large north african gerbil
+south african pygmy gerbil
+african climbing mouse
+eastern shrew mouse
+harvest mouse
+wood mouse
+african grass rat
+four-striped grass mouse
+black house rat
+norway brown rat
+house mouse
+japanese dormouse
+meadow jumping mouse
+northern birch mouse
+northern three-toed jerboa
+giant jerboa
+crested porcupine
+long-tailed porcupine
+porcupine
+tree porcupine
+brazilian agouti
+capybara
+cavy
+rock cavy
+patagonian mara
+paca
+pacarana
+chinchilla
+nutria
+plains viscacha
+octodon degus
+cape dune mole-rat
+northern pika
+brown hare
+black tailed jackrabbit
+snowshoe rabbit
+natal red hare
+hispid hare
+common rabbit
+cottontail rabbit
+brush rabbit
+swamp rabbit

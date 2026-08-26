@@ -1,0 +1,765 @@
+{
+ "id": "colorir-pipeline",
+ "revision": 0,
+ "last_node_id": 14,
+ "last_link_id": 17,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "MarkdownNote",
+   "pos": [
+    -560,
+    40
+   ],
+   "size": [
+    470,
+    700
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "MarkdownNote"
+   },
+   "widgets_values": [
+    "## Illustrious XL v2.0 + KidsIllustration — line art\n\n**Line art é PEDIDO ao modelo, não extraído de imagem colorida depois.**\nCustou várias voltas chegar aqui, e o caminho errado parecia estar dando\ncerto: vetorizar a ilustração colorida e classificar as regiões por\nluminância rendia 218 regiões com a maior em 10% da página. Números bons de\numa página horrível — luminância não separa traço escuro de *preenchimento*\nescuro, e a água azul virava mancha preta sólida.\n\nAs tags que resolvem estão em `ILL_POSITIVO`: `lineart, monochrome,\ngreyscale, white background, no shading` devolve desenho a tinta já em preto\ne branco (saturação média 1,6 de 255 na saída crua). Sem cor para tirar, não\nhá o que classificar errado.\n\n`solo` e `centered composition` são o que centraliza a personagem; sem elas\nela sai num canto com meia página vazia. E `very thick bold black outlines`\nnão entra — foi o que quebrou todas as tentativas anteriores.\n\n### Diferenças de arquitetura em relação ao `colorir_pipeline`\n\n- **`CheckpointLoaderSimple`** entrega modelo, CLIP e VAE juntos (é SDXL).\n- **Existe prompt negativo** (`cfg=6`), e ele ataca cor e degradê.\n- **É modelo de tag (booru)**, não de prosa. Colar o `STYLE_PREFIX` do outro\n  workflow aqui devolve uma grade 3x3 de adesivos.\n- **Clip skip 2** — é como a LoRA foi treinada.\n\nDaqui para a frente o caminho é o mesmo do Z-Image: limpar, diagnosticar,\nvetorizar, e `conversor_linhas.py` depois. Medido em três seeds: 67, 82 e 83\náreas; a de 83 passa em tudo, com a maior região em 16% da página.\n"
+   ],
+   "title": "Como usar"
+  },
+  {
+   "id": 2,
+   "type": "CheckpointLoaderSimple",
+   "pos": [
+    -60,
+    40
+   ],
+   "size": [
+    400,
+    98
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "slot_index": 0,
+     "links": [
+      1
+     ]
+    },
+    {
+     "name": "CLIP",
+     "type": "CLIP",
+     "slot_index": 1,
+     "links": [
+      2
+     ]
+    },
+    {
+     "name": "VAE",
+     "type": "VAE",
+     "slot_index": 2,
+     "links": [
+      11
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CheckpointLoaderSimple"
+   },
+   "widgets_values": [
+    "illustriousXLV20_v20Stable.safetensors"
+   ]
+  },
+  {
+   "id": 3,
+   "type": "LoraLoader",
+   "pos": [
+    -60,
+    190
+   ],
+   "size": [
+    400,
+    126
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 1
+    },
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 2
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "slot_index": 0,
+     "links": [
+      6
+     ]
+    },
+    {
+     "name": "CLIP",
+     "type": "CLIP",
+     "slot_index": 1,
+     "links": [
+      3
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoraLoader"
+   },
+   "widgets_values": [
+    "KidsIllustration.safetensors",
+    0.8,
+    0.8
+   ]
+  },
+  {
+   "id": 4,
+   "type": "CLIPSetLastLayer",
+   "pos": [
+    -60,
+    360
+   ],
+   "size": [
+    400,
+    58
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 3
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CLIP",
+     "type": "CLIP",
+     "slot_index": 0,
+     "links": [
+      4,
+      5
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPSetLastLayer"
+   },
+   "widgets_values": [
+    -2
+   ],
+   "title": "Clip skip 2 (como a LoRA foi treinada)"
+  },
+  {
+   "id": 5,
+   "type": "CLIPTextEncode",
+   "pos": [
+    420,
+    40
+   ],
+   "size": [
+    460,
+    340
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 4
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "slot_index": 0,
+     "links": [
+      7
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPTextEncode"
+   },
+   "widgets_values": [
+    "coloring book page, lineart, monochrome, greyscale, white background, black and white, no shading, no screentone, clean even lines, no fill, solo, centered composition, large in the middle of the frame, full body, facing viewer, smile, chibi mermaid girl, long wavy hair, fish tail with scales, shell top, underwater, two jellyfish, two crabs, starfish, seashells, round bubbles, coral and seaweed along the bottom edge, rounded hills across the bottom touching the frame on both sides, decorative rectangular border frame around the whole page"
+   ],
+   "title": "Positivo (tags)"
+  },
+  {
+   "id": 6,
+   "type": "CLIPTextEncode",
+   "pos": [
+    420,
+    420
+   ],
+   "size": [
+    460,
+    300
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 5
+    }
+   ],
+   "outputs": [
+    {
+     "name": "CONDITIONING",
+     "type": "CONDITIONING",
+     "slot_index": 0,
+     "links": [
+      8
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPTextEncode"
+   },
+   "widgets_values": [
+    "color, colored, colorful, gradient, soft shading, shadow, screentone, hatching, grey fill, painted, airbrush, blurry, glow, photo, realistic, 3d, text, watermark, signature, multiple views, cropped, off-center"
+   ],
+   "title": "Negativo — o que o Z-Image não tinha"
+  },
+  {
+   "id": 7,
+   "type": "EmptyLatentImage",
+   "pos": [
+    960,
+    420
+   ],
+   "size": [
+    300,
+    106
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "slot_index": 0,
+     "links": [
+      9
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "EmptyLatentImage"
+   },
+   "widgets_values": [
+    1024,
+    1024,
+    1
+   ]
+  },
+  {
+   "id": 8,
+   "type": "KSampler",
+   "pos": [
+    960,
+    40
+   ],
+   "size": [
+    320,
+    262
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 6
+    },
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 7
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 8
+    },
+    {
+     "name": "latent_image",
+     "type": "LATENT",
+     "link": 9
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "slot_index": 0,
+     "links": [
+      10
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "KSampler"
+   },
+   "widgets_values": [
+    42,
+    "randomize",
+    28,
+    6.0,
+    "euler_ancestral",
+    "normal",
+    1
+   ]
+  },
+  {
+   "id": 9,
+   "type": "VAEDecode",
+   "pos": [
+    1360,
+    40
+   ],
+   "size": [
+    240,
+    46
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "samples",
+     "type": "LATENT",
+     "link": 10
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 11
+    }
+   ],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "slot_index": 0,
+     "links": [
+      12
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEDecode"
+   },
+   "widgets_values": []
+  },
+  {
+   "id": 10,
+   "type": "ColorirLimpar",
+   "pos": [
+    1360,
+    130
+   ],
+   "size": [
+    330,
+    154
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "imagem",
+     "type": "IMAGE",
+     "link": 12
+    }
+   ],
+   "outputs": [
+    {
+     "name": "imagem",
+     "type": "IMAGE",
+     "slot_index": 0,
+     "links": [
+      13,
+      14,
+      15
+     ]
+    },
+    {
+     "name": "manchas_abertas",
+     "type": "INT",
+     "slot_index": 1,
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ColorirLimpar"
+   },
+   "widgets_values": [
+    200,
+    false,
+    9,
+    2000
+   ]
+  },
+  {
+   "id": 11,
+   "type": "ColorirDiagnostico",
+   "pos": [
+    1360,
+    330
+   ],
+   "size": [
+    340,
+    202
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "imagem",
+     "type": "IMAGE",
+     "link": 13
+    }
+   ],
+   "outputs": [
+    {
+     "name": "aprovado",
+     "type": "BOOLEAN",
+     "slot_index": 0,
+     "links": [
+      16
+     ]
+    },
+    {
+     "name": "relatorio",
+     "type": "STRING",
+     "slot_index": 1,
+     "links": [
+      17
+     ]
+    },
+    {
+     "name": "fora",
+     "type": "FLOAT",
+     "slot_index": 2,
+     "links": []
+    },
+    {
+     "name": "maior",
+     "type": "FLOAT",
+     "slot_index": 3,
+     "links": []
+    },
+    {
+     "name": "tinta",
+     "type": "FLOAT",
+     "slot_index": 4,
+     "links": []
+    },
+    {
+     "name": "areas",
+     "type": "INT",
+     "slot_index": 5,
+     "links": []
+    },
+    {
+     "name": "macico",
+     "type": "FLOAT",
+     "slot_index": 6,
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ColorirDiagnostico"
+   },
+   "widgets_values": [
+    0.3,
+    0.88,
+    0.18,
+    0.28,
+    35
+   ]
+  },
+  {
+   "id": 12,
+   "type": "PreviewAny",
+   "pos": [
+    1360,
+    580
+   ],
+   "size": [
+    340,
+    88
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "source",
+     "type": "*",
+     "link": 17
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "PreviewAny"
+   },
+   "widgets_values": [],
+   "title": "Laudo"
+  },
+  {
+   "id": 13,
+   "type": "ColorirVetorizar",
+   "pos": [
+    1360,
+    700
+   ],
+   "size": [
+    340,
+    154
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "imagem",
+     "type": "IMAGE",
+     "link": 14
+    },
+    {
+     "name": "aprovado",
+     "type": "BOOLEAN",
+     "link": 16,
+     "shape": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "caminho_svg",
+     "type": "STRING",
+     "slot_index": 0,
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "ColorirVetorizar"
+   },
+   "widgets_values": [
+    "illustrious",
+    "C:\\projetos\\app_de_colorir\\output_coloring_pages",
+    true,
+    false
+   ]
+  },
+  {
+   "id": 14,
+   "type": "PreviewImage",
+   "pos": [
+    1760,
+    40
+   ],
+   "size": [
+    400,
+    420
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 15
+    }
+   ],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "PreviewImage"
+   },
+   "widgets_values": [],
+   "title": "Página"
+  }
+ ],
+ "links": [
+  [
+   1,
+   2,
+   0,
+   3,
+   0,
+   "MODEL"
+  ],
+  [
+   2,
+   2,
+   1,
+   3,
+   1,
+   "CLIP"
+  ],
+  [
+   3,
+   3,
+   1,
+   4,
+   0,
+   "CLIP"
+  ],
+  [
+   4,
+   4,
+   0,
+   5,
+   0,
+   "CLIP"
+  ],
+  [
+   5,
+   4,
+   0,
+   6,
+   0,
+   "CLIP"
+  ],
+  [
+   6,
+   3,
+   0,
+   8,
+   0,
+   "MODEL"
+  ],
+  [
+   7,
+   5,
+   0,
+   8,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   8,
+   6,
+   0,
+   8,
+   2,
+   "CONDITIONING"
+  ],
+  [
+   9,
+   7,
+   0,
+   8,
+   3,
+   "LATENT"
+  ],
+  [
+   10,
+   8,
+   0,
+   9,
+   0,
+   "LATENT"
+  ],
+  [
+   11,
+   2,
+   2,
+   9,
+   1,
+   "VAE"
+  ],
+  [
+   12,
+   9,
+   0,
+   10,
+   0,
+   "IMAGE"
+  ],
+  [
+   13,
+   10,
+   0,
+   11,
+   0,
+   "IMAGE"
+  ],
+  [
+   14,
+   10,
+   0,
+   13,
+   0,
+   "IMAGE"
+  ],
+  [
+   15,
+   10,
+   0,
+   14,
+   0,
+   "IMAGE"
+  ],
+  [
+   16,
+   11,
+   0,
+   13,
+   1,
+   "BOOLEAN"
+  ],
+  [
+   17,
+   11,
+   1,
+   12,
+   0,
+   "STRING"
+  ]
+ ],
+ "groups": [],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.55,
+   "offset": [
+    120,
+    260
+   ]
+  }
+ },
+ "version": 0.4
+}
