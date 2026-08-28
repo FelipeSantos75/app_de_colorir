@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'brush_type.dart';
 
-class BrushPalette extends StatelessWidget {
+class BrushPalette extends StatefulWidget {
   final BrushType selectedBrush;
   final String? selectedTexture;
   final Color? selectedColor; // Keep selectedColor for applying texture
@@ -19,6 +19,22 @@ class BrushPalette extends StatelessWidget {
     // this.onColorSelected,
     this.isPremiumUser = false, // Default to false
   });
+
+  @override
+  State<BrushPalette> createState() => _BrushPaletteState();
+}
+
+class _BrushPaletteState extends State<BrushPalette> {
+  // O Scrollbar precisa do mesmo controller da lista. Sem ele cai no
+  // PrimaryScrollController, ao qual uma ListView horizontal nao se liga, e a
+  // barra reclamava de "no ScrollPosition attached" a cada frame.
+  final ScrollController _controladorRolagem = ScrollController();
+
+  @override
+  void dispose() {
+    _controladorRolagem.dispose();
+    super.dispose();
+  }
 
   // Get textures based on brush type
   List<String> _getTexturesForBrush(BrushType brush) {
@@ -229,10 +245,10 @@ class BrushPalette extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textures = _getTexturesForBrush(selectedBrush);
+    final textures = _getTexturesForBrush(widget.selectedBrush);
 
     // Verificar se o pincel é premium e o usuário não tem acesso premium
-    bool isPremiumBrushLocked = selectedBrush.isPremium && !isPremiumUser;
+    bool isPremiumBrushLocked = widget.selectedBrush.isPremium && !widget.isPremiumUser;
 
     return Container(
       height: 100,
@@ -253,13 +269,13 @@ class BrushPalette extends StatelessWidget {
           Row(
             children: [
               Text(
-                '${selectedBrush.name} - Texturas',
+                '${widget.selectedBrush.name} - Texturas',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (selectedBrush.isPremium)
+              if (widget.selectedBrush.isPremium)
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Icon(
@@ -284,10 +300,12 @@ class BrushPalette extends StatelessWidget {
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
               child: Scrollbar(
+                controller: _controladorRolagem,
                 thumbVisibility: true, // Sempre mostrar a barra de rolagem
                 thickness: 8.0,
                 radius: const Radius.circular(4.0),
                 child: ListView(
+                  controller: _controladorRolagem,
                   scrollDirection: Axis.horizontal,
                   children: [
                     // Seção de texturas (apenas)
@@ -295,8 +313,8 @@ class BrushPalette extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 8),
                           child: _TextureOption(
                             texture: texture,
-                            isSelected: selectedTexture == texture,
-                            onSelected: onTextureSelected,
+                            isSelected: widget.selectedTexture == texture,
+                            onSelected: widget.onTextureSelected,
                             isLocked: isPremiumBrushLocked,
                           ),
                         )),

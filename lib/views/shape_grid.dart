@@ -224,19 +224,24 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
         widget.isGuest; // Locked if premium and guest
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (isLocked) {
           _showLoginPrompt(context);
         } else {
-          Navigator.push(
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ColorableShapesPage(
                 shapes: drawing.shapes,
+                title: drawing.title,
                 isPremiumUser: _isPremiumUser, // Pass premium status
               ),
             ),
           );
+          // A pagina de pintura desfaz as cores ao sair, mas os shapes sao os
+          // mesmos objetos da miniatura: sem repintar, a grade continua
+          // mostrando o desenho colorido.
+          if (mounted) setState(() {});
         }
       },
       child: Container(
