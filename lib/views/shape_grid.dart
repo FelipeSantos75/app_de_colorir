@@ -4,6 +4,7 @@ import 'canvas.dart';
 import '../control/shapes_library.dart';
 import '../models/desenho.dart';
 import '../models/shape.dart';
+import '../config.dart';
 import 'loginpage.dart'; // Add for navigation
 import 'registerpage.dart'; // Add for navigation
 
@@ -48,7 +49,8 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
       _isPremiumUser = true;
     } else {
       _currentUser = null;
-      _isPremiumUser = false;
+      // TEMPORÁRIO: visitantes também ganham premium enquanto a flag estiver on
+      _isPremiumUser = kPremiumLiberadoParaTodos;
     }
     setState(() {}); // Update UI based on user status
   }
@@ -198,7 +200,7 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
   List<Drawing> _getFilteredDrawings() {
     return library.where((drawing) {
       // Filter by premium status if user is guest
-      if (widget.isGuest && drawing.isPremium) {
+      if (!kPremiumLiberadoParaTodos && widget.isGuest && drawing.isPremium) {
         return false;
       }
 
@@ -217,8 +219,9 @@ class _ShapesPageGridState extends State<ShapesPageGrid> {
   }
 
   Widget _buildGridItem(Drawing drawing) {
-    bool isLocked =
-        drawing.isPremium && widget.isGuest; // Locked if premium and guest
+    bool isLocked = !kPremiumLiberadoParaTodos &&
+        drawing.isPremium &&
+        widget.isGuest; // Locked if premium and guest
 
     return GestureDetector(
       onTap: () {
